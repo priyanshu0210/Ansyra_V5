@@ -31,13 +31,11 @@ Public feature pages and dashboard help explain the inputs, outputs, AI contribu
 | Change | Why |
 | --- | --- |
 | INR-default currency dropdown and shared money controls | Keep currency selection consistent while preserving the original units in saved records. Reference exchange rates are dated, not live market quotes. |
-| Forest-green dashboard controls, required-field indicators, and responsive spacing | Make active states and required inputs easier to recognise, and prevent clipped text and misaligned controls. |
 | Route and deal preloading, shared request handling, and deferred dossier sections | Reduce repeated requests and unnecessary work during navigation. First visits still depend on network, server and cache conditions. |
 | Deferred export preparation | Load the required dossier content before printing instead of printing incomplete sections. |
 | Review-history and deal-scoped review queries | Show the relevant review record without mixing information from different deals. |
 | Synergy rendering and stale-analysis fixes | Handle older saved results safely and clear an explanation when the numbers it described change. |
 | Session controls and inactivity handling | Support sign-out scopes and browser-side inactivity handling. A suspended browser enforces its deadline when it resumes. |
-| Clearer landing and feature descriptions | Remove unexplained abbreviations and claims that went beyond the implemented functionality. |
 | Responsive hero and stationary audience selector | Keep the hero content visible on desktop and stop audience cards jumping over other content. |
 | Publication preparation | Keep local credentials and hosted login identifiers out of the source snapshot, use configurable public contact details, and check the actual release branch in CI. |
 
@@ -53,36 +51,6 @@ Scope → Ground → Analyse → Verdict describes an assumption-review process:
 
 `src/` contains the interface, `api/` the server, `contracts/` shared rules, and `supabase/migrations/` database changes. The server enforces authentication, feature permissions and record access; frontend visibility is not the security boundary. Financial formulas remain separate from AI reasoning.
 
-## Run locally
-
-Use Node 22.12 or newer within the range in `package.json`.
-
-```sh
-cp .env.example .env
-npm ci
-npm run dev
-```
-
-Fill the local environment file with your own Supabase configuration. Keep `AI_PROVIDER=mock` for development without paid AI calls; the database and authentication services are still required. The app and API are served together at `http://localhost:3000`.
-
-Accounts are provisioned by an administrator, not through public registration. After setting up your own database and migrations, bootstrap an administrator:
-
-```sh
-npx tsx scripts/bootstrap-admin.ts you@example.com --name "Your Name"
-```
-
-The script generates a password rather than shipping a default login. Keep its output private. See [local database testing](docs/LOCAL_TESTING.md) for an isolated test environment. Fixture identities are synthetic `example.invalid` addresses; they are not hosted login credentials. Do not seed or reset a hosted database to test a release.
-
-## Checks
-
-```sh
-npm run verify                 # TypeScript, lint, unit tests, build, dependency audits, publication scan
-npm run test:local:integration # Isolated local database tests
-npm run test:local:regression  # Isolated workflow regressions
-npm run test:local:e2e         # Local browser tests
-```
-
-Set up the isolated environment before running database or browser tests. Tests use synthetic data and mock AI; passing them does not establish live AI accuracy, email delivery, or every production workflow. See [release notes](docs/release-2026-09-27.md) for the checks performed for this release.
 
 ## Deployment
 
@@ -95,8 +63,6 @@ Optional `VITE_PUBLIC_CONTACT_EMAIL` supplies the public contact shown on legal 
 ## Repository safety
 
 - Do not commit `.env` files, generated seed passwords, database dumps, authentication sessions, private keys, or test artifacts. `.env.example` contains configuration names and placeholders only.
-- Historical deployment screenshots, operational reports and generated evidence stay local rather than being copied into the publishable source.
-- Password-generation and authentication code belong in the project; actual account credentials do not.
 - The Ansyra_V5 snapshot starts with a clean Git history rather than copying historical operational records and author metadata.
 - A scan can identify known patterns and accidental copies; it cannot guarantee that every possible secret has been found. Review the exact files before changing repository visibility, and rotate any credential that was ever exposed.
 
