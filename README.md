@@ -26,6 +26,10 @@ The copilot uses the page context and recent conversation. It does not automatic
 
 Public feature pages and dashboard help explain the inputs, outputs, AI contribution, limits, and relevant deal stage. See the [feature mapping and audit](docs/landing-product-audit-2026-09-27.md).
 
+To check the features use the following demo login details:
+
+Email - sarah.test3@ansyra-test.com  Password -  TestPass!2026c
+
 **Engineering highlights**
 
 - **One AI gateway.** Every AI call goes through `api/lib/ai.ts::callAI` — provider-agnostic (Gemini/Groq/OpenRouter/Anthropic), strict-JSON output contracts validated with zod, automatic retry, and a mock provider so the full product runs with **zero AI spend** in development. Web-grounded research calls (Target Discovery) use Gemini native grounding with source citations.
