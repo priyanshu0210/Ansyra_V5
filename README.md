@@ -37,7 +37,6 @@ Public feature pages and dashboard help explain the inputs, outputs, AI contribu
 | Synergy rendering and stale-analysis fixes | Handle older saved results safely and clear an explanation when the numbers it described change. |
 | Session controls and inactivity handling | Support sign-out scopes and browser-side inactivity handling. A suspended browser enforces its deadline when it resumes. |
 | Responsive hero and stationary audience selector | Keep the hero content visible on desktop and stop audience cards jumping over other content. |
-| Publication preparation | Keep local credentials and hosted login identifiers out of the source snapshot, use configurable public contact details, and check the actual release branch in CI. |
 
 Scope → Ground → Analyse → Verdict describes an assumption-review process: choose the question, supply context, review the model's reasoning, and record a human response. It is not an automatic pipeline shared by every feature.
 
