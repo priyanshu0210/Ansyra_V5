@@ -1,0 +1,123 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<style>
+  @font-face {
+    font-family: "Bespoke Slab";
+    font-style: normal; font-weight: 400;
+    src: url("FONTDIR/bespokeslab-400.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "Redaction 50";
+    font-style: normal; font-weight: 400;
+    src: url("FONTDIR/redaction-50-latin-400-normal.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "General Sans";
+    font-style: normal; font-weight: 400;
+    src: url("FONTDIR/generalsans-400.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "General Sans";
+    font-style: normal; font-weight: 500;
+    src: url("FONTDIR/generalsans-500.woff2") format("woff2");
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body { width: 1200px; height: 630px; }
+
+  body {
+    /* --desk / --desk-deep, the landing's own ground. */
+    background: #123a3c;
+    color: #eaf2f1;                 /* --ink-inv */
+    font-family: "General Sans", system-ui, sans-serif;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* The amber light entering the frame — the brand's one gesture. Kept low and
+     to the right so it never sits behind the text. */
+  .glow {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(58% 78% at 88% 108%, rgba(240,164,68,0.34) 0%, rgba(240,164,68,0.10) 42%, transparent 68%),
+      radial-gradient(40% 60% at 8% -12%, rgba(234,242,241,0.05) 0%, transparent 70%);
+  }
+
+  .frame {
+    position: relative;
+    height: 100%;
+    padding: 74px 84px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .lockup { display: flex; align-items: center; gap: 15px; }
+  .lockup svg { display: block; }
+  .wordmark {
+    font-family: "Bespoke Slab", Georgia, serif;
+    font-size: 37px; font-weight: 400;
+    letter-spacing: -0.01em; line-height: 1;
+  }
+
+  /* The stat carries the card. It is the same claim as og:image:alt. */
+  /* Matches the hero's own setting of this exact line (Hero.tsx): the clear
+     display cut, tight leading, -0.035em, 26ch measure.
+     NOTE: the figure is deliberately NOT set in Redaction 50. In this system the
+     degraded cut means "unresolved / not yet reached / struck" (see Pipeline,
+     Redline, EvidenceLens). Setting the stat in it would say the number is in
+     doubt, which is the opposite of the claim the card is making. */
+  .stat {
+    font-family: "Bespoke Slab", Georgia, serif;
+    font-size: 68px;
+    font-weight: 400;
+    line-height: 0.98;
+    letter-spacing: -0.035em;
+    max-width: 26ch;
+    text-wrap: balance;
+  }
+
+  .foot {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-top: 30px;
+    border-top: 1px solid rgba(234,242,241,0.16);   /* --fg-rule on dark */
+  }
+  .tag {
+    font-size: 21px; font-weight: 400;
+    color: rgba(234,242,241,0.74);
+    letter-spacing: 0.002em;
+  }
+  .url {
+    font-size: 19px; font-weight: 500;
+    letter-spacing: 0.10em; text-transform: uppercase;
+    color: #f0a444;
+  }
+</style>
+</head>
+<body>
+  <div class="glow"></div>
+  <div class="frame">
+    <div class="lockup">
+      <svg width="46" height="46" viewBox="0 0 100 100" fill="none">
+        <path d="M50 11 L71 52 H61.2 L50 29.5 L38.8 52 H29 Z" fill="#eaf2f1" />
+        <path d="M8 58 H92 V70 H79 V80 Q79 88 87 92 V95 H61 V92 Q69 88 69 80 V79
+                 Q69 74 50 74 Q31 74 31 79 V80 Q31 88 39 92 V95 H13 V92 Q21 88 21 80 V70 H8 Z"
+              fill="#eaf2f1" />
+      </svg>
+      <span class="wordmark">Ansyra</span>
+    </div>
+
+    <!-- Must stay word-for-word identical to the <h1> in landing/Hero.tsx, and
+         to og:image:alt in index.html. All three moved together on 2026-08-13. -->
+    <h1 class="stat">The deal closes.<br>The decision record shouldn't.</h1>
+
+    <div class="foot">
+      <span class="tag">The decision record for M&amp;A</span>
+      <span class="url">ansyra.com</span>
+    </div>
+  </div>
+</body>
+</html>

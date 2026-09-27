@@ -1,0 +1,2432 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Self-hosted type ───────────────────────────────────────────────────────
+   Bespoke Slab (display) + General Sans (text), with Redaction 50 as the
+   unresolved cut.
+
+   Redaction is a family drawn with progressive degradation levels. That is not
+   decoration here: text being STRUCK is set in the degraded cut (Redaction 50)
+   while the insertion is set clean, so the typeface performs the edit. Using
+   the degraded cut as general texture wastes the idea; see DESIGN.md.
+
+   Two faces have already been shipped and removed from this project, Fraunces
+   and then Newsreader. Both are on the anti-default list. Neither returns. */
+/* The dissolving cut. Reserved for struck / redacted text. */
+@font-face {
+  font-family: "Redaction 50";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/redaction-50-latin-400-normal.woff2") format("woff2");
+}
+
+/* THE DISPLAY FACE: Bespoke Slab.
+   A slab serif says records and ledgers without going anywhere near the
+   legal-dossier vocabulary the previous redesign retired. Chosen over five
+   other pairings in a live specimen; the ones it beat are deleted rather than
+   left behind a flag, because a shipped font nobody selects is pure payload.
+
+   Three weights, and each is used: 300 on section headings and the pull-quote,
+   400 on the hero claim and instrument names, 500 where a figure needs weight.
+   Nothing here synthesises. */
+@font-face {
+  font-family: "Bespoke Slab";
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url("/fonts/bespokeslab-300.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Bespoke Slab";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/bespokeslab-400.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Bespoke Slab";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/bespokeslab-500.woff2") format("woff2");
+}
+/* THE READING FACE: General Sans. A neo-grotesque, not a geometric, so it does
+   not trip the "geometric sans on glass" default DESIGN.md names. */
+@font-face {
+  font-family: "General Sans";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/generalsans-400.woff2") format("woff2");
+}
+@font-face {
+  font-family: "General Sans";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/generalsans-500.woff2") format("woff2");
+}
+
+/* ─── Ansyra: The Living Deal Record ─────────────────────────────────────────
+   The landing is an institutional document that revises itself as you read.
+   See DESIGN.md for the full contract. Variable NAMES are kept from earlier
+   eras (--paper, --ink, --gold…) so every existing component reskins by value
+   swap; only the VALUES changed.
+
+   The ground is BOND GREY: a photocopier grey with a faint green cast. It is
+   deliberately neither warm cream (the AI-generated-interface default) nor
+   navy-and-gold (this category's default). Landing on either means the work
+   stopped early. */
+:root {
+  /* ─── RETIRED: the Living Deal Record ramp ────────────────────────────────
+     Every one of these is now unreferenced. They are kept for one release so
+     any surface still being ported has something to resolve against rather
+     than rendering transparent, and because 39 files once consumed these
+     names. Delete after Phase D ships and the full route sweep is green.
+     The live system is the Refraction block further down. */
+  --desk: #1b1e23;
+  --desk-deep: #101317;
+  --paper: #eeeff2;
+  --paper-band: #e4e6eb;
+  --paper-2: #e8eaef;
+  --paper-3: #e4e6eb;
+  --paper-4: #d9dce3;
+  --paper-card: #f6f7f9;
+  /* Ink text ramp */
+  --ink: #14161a;
+  --ink-2: #383c40;
+  --muted-ink: #5a5f63;
+  /* Provenance: citations, exhibit numbers, source lines. 5.06:1 / 4.65:1. */
+  --graphite: #61666b;
+  --pencil: #61666b;
+  --rule: #c9ccd4;
+
+  /* ─── Redline semantics ───────────────────────────────────────────────────
+     These two are the only accents, and they MEAN something: inserted versus
+     struck. Using either as a generic highlight breaks the grammar and makes
+     the redline illegible as an idea. Both measured on --paper AND on
+     --paper-band, because the ledger bands alternate underneath them. */
+  --insertion: #1a6438; /* 6.27:1 / 5.76:1 */
+  --challenge: #a8301b; /* 5.91:1 / 5.43:1 */
+  /* Warm amber-orange accent (name --gold kept for compat).
+     IMPORTANT: --gold is 2.98:1 on white. It FAILS WCAG AA for text at every
+     size (4.5:1 normal, 3:1 large) and must only be used for glow, fills,
+     borders, and other non-text accents. Any amber that carries WORDS uses
+     --gold-text (4.80:1). This split is why the landing's "Read ->" links,
+     role lines, and chip labels were previously unreadable. */
+  /* ─── Accent unification ──────────────────────────────────────────────────
+     The record language has NO decorative accent. Emphasis is weight, rule and
+     fill; colour is reserved for meaning. These legacy names are kept because
+     39 files reference them, but their VALUES now point at the record palette,
+     so every dashboard surface unifies without touching 39 files.
+
+     --gold was the old brand accent AND carried text in 48 places at 2.98:1,
+     failing AA everywhere it appeared as words. It is now ink.
+
+     The three scoring bands below are the same scale the landing's Assumption
+     Ledger renders, so a score reads identically on both surfaces. */
+  --gold: #14161a; /* active / accent  -> ink */
+  --gold-text: #985017; /* the "watch" band, AA-safe amber */
+  --amber: #985017; /* watch      -> AA-safe amber */
+  --danger: #a8301b; /* red flag   -> challenge */
+  --leaf: #1a6438; /* grounded   -> insertion */
+  --sage: #61666b; /* -> graphite */
+
+  /* Categorical chart series. Ordered by weight so a 2-series chart reads as
+     ink-vs-graphite and only picks up hue when the data actually needs more
+     categories. Every value clears 4.5:1 on --paper, because a chart legend is
+     text-sized. */
+  --chart-1: #14161a;
+  --chart-2: #61666b;
+  --chart-3: #1a6438;
+  --chart-4: #a8301b;
+  --chart-5: #985017;
+  --chart-6: #3f4a57;
+
+  /* --glass-bg / --glass-bg-strong / --glass-border deleted (Phase 0): they fed
+     only .ansyra-glass, which had zero call sites. The Refraction glass tokens
+     (--glass-light / --glass-dark) are further down and are not related. */
+  /* Elevation shadows (neutral — a white page shows any warm tint as dirt) */
+  --elev-1: 0 1px 2px rgba(28, 26, 23, 0.04), 0 2px 8px rgba(28, 26, 23, 0.04);
+  --elev-2: 0 4px 14px rgba(28, 26, 23, 0.06), 0 12px 32px rgba(28, 26, 23, 0.05);
+  --elev-3: 0 12px 30px rgba(28, 26, 23, 0.08), 0 30px 64px rgba(28, 26, 23, 0.08);
+
+  --background: 0 0% 100%;
+  --foreground: 30 8% 10%;
+  --card: 0 0% 100%;
+  --card-foreground: 30 15% 12%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 30 15% 12%;
+  --primary: 30 15% 12%;
+  --primary-foreground: 43 44% 96%;
+  --secondary: 40 6% 95%;
+  --secondary-foreground: 30 8% 10%;
+  --muted: 40 6% 96%;
+  --muted-foreground: 38 6% 42%;
+  /* --caustic #f2a23c in hsl. Its foreground is INK, never white:
+     white on amber is 2.10:1 and the contrast gate asserts that failure. */
+  --accent: 33 87% 59%;
+  --accent-foreground: 200 20% 7%;
+  --destructive: 9 68% 42%; /* --sev-flag on light */
+  --destructive-foreground: 0 0% 100%;
+  --border: 40 6% 91%;
+  --input: 40 6% 91%;
+  --ring: 28 76% 53%;
+  /* D5. shadcn inherits the node radius, so 53 primitives pick up the
+     Refraction scale without touching 53 files. */
+  --radius: 8px;
+  --sidebar-background: 40 6% 98%;
+  --sidebar-foreground: 30 8% 10%;
+  --sidebar-primary: 30 8% 10%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 40 6% 94%;
+  --sidebar-accent-foreground: 30 8% 10%;
+  --sidebar-border: 40 6% 91%;
+  --sidebar-ring: 28 76% 53%;
+
+  --font-display: "Bespoke Slab", "Georgia", serif;
+  --font-heading: "Bespoke Slab", "Georgia", serif;
+  --font-serif: "Bespoke Slab", "Georgia", serif;
+  /* Reserved for struck / redacted text only. See DESIGN.md. */
+  --font-struck: "Redaction 50", "Georgia", serif;
+  --font-sans: "General Sans", system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* ─── Type scale (7 steps) ────────────────────────────────────────────────
+     Replaces the 10 ad-hoc pixel sizes that had accumulated on the landing
+     (10 / 11 / 11.5 / 12 / 12.5 / 13 / 13.5 / 15 / 19 / 28px). Differences of
+     half a pixel are not perceivable and cannot be defended by a system, so
+     they are gone.
+
+     Font size and column width are ONE decision. A display size that rags the
+     headline in its actual column is a size error, not a copy problem.
+
+     Reduced two notches at the display end (was 40->96 / 32->48 / 22->30).
+     Body and below are untouched: the floor is 12px and there is no room
+     under it. */
+  --step-display: clamp(2.125rem, 5.6vw, 4.5rem); /* 34 -> 72  hero h1 */
+  --step-title: clamp(1.75rem, 2.9vw, 2.5rem); /*  28 -> 40  section h2 */
+  --step-lead: clamp(1.25rem, 1.9vw, 1.625rem); /*  20 -> 26  card headline */
+  --step-md: 1.1875rem; /*  19      card headings */
+  --step-body: 1rem; /*  16      body copy */
+  --step-sm: 0.875rem; /*  14      secondary */
+  --step-xs: 0.75rem; /*  12      meta / captions. Nothing on this page goes
+                                   below 12px: the old 10px citation line was
+                                   not readable at arm's length. */
+
+  /* ─── Vertical rhythm (5 steps) ──────────────────────────────────────────
+     Replaces 11 arbitrary mt-* values. Section padding deliberately varies by
+     role so the page has pacing instead of a metronome. */
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.75rem;
+  --space-4: 3rem;
+  --space-5: 5rem;
+
+  /* ─── Motion vocabulary ──────────────────────────────────────────────────
+     Confident deceleration, and nothing on this surface overshoots. An
+     overshoot or elastic curve travels past its endpoint and springs back,
+     which reads as playful: the wrong register for a product whose job is
+     defending deal decisions to an investment committee. Use exponential
+     deceleration only. Exit and micro curves get added here when there is a
+     real caller for them, never speculatively. */
+  --ease-entrance: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* ═══ REFRACTION ═══════════════════════════════════════════════════════════
+     Phase 0. NOTHING consumes these yet: every surface is still driven by the
+     Living Deal Record tokens above. Phase A retargets consumers onto these
+     and retires the ones it replaces. Full rationale: docs/constitution.md
+
+     The concept in one rule: INDEX OF REFRACTION. Glass has a measurable
+     clarity value and this product emits clarity values (the ledger scores
+     91/74/38). So blur is a data channel, not a taste decision. Every blur
+     below is either a fixed depth-layer token or derived from a real number in
+     the content. There is no third case. */
+
+  /* ── Ground ramp ──
+     TWO GROUNDS PER THEME, and the arc crosses between them. `--ground-a` is
+     where the page starts, `--ground-b` where it arrives.
+
+     The names are A and B, not light and dark, because which one is lighter is
+     now a property of the THEME. In the light theme both grounds are pastels
+     and both carry dark text; in the dark theme both are greens and both carry
+     light text. That is the whole reason the readability dead band is gone:
+     the arc no longer inverts the text roles halfway through, so there is no
+     mid-crossfade window where neither role clears 4.5:1.
+
+     `--clear` / `--medium` / `--medium-deep` are kept as aliases because ~65
+     call sites use them, and because "the page ground" is still what they
+     mean. They are no longer statements about lightness. */
+  --ground-a: #dee1f0; /* periwinkle */
+  --ground-b: #cfe3d9; /* mint */
+  --ground-deep: #bed3c7; /* deepest light tone. Gradient terminus only. */
+  --float: #f3f5fb; /* solid surface on ground A */
+
+  --clear: var(--ground-a);
+  --medium: var(--ground-b);
+  --medium-deep: var(--ground-deep);
+
+  /* ── Text ──
+     Solved against every surface in the theme (both grounds, both glass
+     composites, the solid card) AND against the unresolved 0.85 floor, which
+     is the binding constraint: every candidate palette passed at full opacity
+     and failed at ~4.1:1 dimmed. Verified by scripts/contrast.mjs. */
+  --ink-a: #14201c; /* primary on ground A.   11.28:1 worst */
+  --haze-a: #3a4a42; /* secondary on ground A.  6.32:1 worst, 4.52:1 unresolved */
+  --ink-b: #14201c; /* primary on ground B.   same roles: both grounds are light */
+  --haze-b: #3a4a42; /* secondary on ground B */
+
+  /* Legacy names, kept so existing rules resolve. */
+  --ink-next: var(--ink-a);
+  --haze-ink: var(--haze-a);
+  --ink-inv: #eaf2f1;
+  --haze: #d4e6e4;
+
+  /* ── Accent: a dispersion pair ──
+     White light through glass disperses; a single-hue caustic is physically
+     wrong for a refraction concept. --caustic is the near/warm end, --prism
+     the far/cold end.
+     --caustic fills in exactly THREE sites: primary CTA, active/selected
+     state, the B6 lens control. Its text is ALWAYS --ink-next (8.96:1). White
+     on --caustic is 2.10:1 and is never permitted at any size.
+     --prism never becomes a surface. It only arrives as light through
+     something. */
+  --caustic: #f2a23c;
+  --prism: #6ed4e0;
+
+  /* THE LABEL ON AN AMBER FILL. NOT THEME-VARIED, DELIBERATELY.
+     The comment above says the text on --caustic "is ALWAYS --ink-next" — and
+     that stopped being true the moment the dark theme existed. `--ink-next`
+     resolves through `--ink-a`, which the dark theme flips to #eaf2f1, so the
+     landing's closing CTA — the main conversion button on the site — shipped
+     as light ink on amber at **1.85:1** at 14px. Measured on the running page.
+     --caustic is #f2a23c in BOTH themes, because it is a light emitted by the
+     glass rather than a ground. A fill that never changes needs a label that
+     never changes: 7.99:1, and it cannot be inverted by a theme that has no
+     business inverting it. Any surface filled with --caustic uses this. */
+  --on-accent: #14201c;
+
+  /* ── Severity as illumination ──
+     Hue is the third channel, not the only one: brightness and backlight blur
+     radius carry severity independently of hue, which is what makes these
+     legible to the ~8% of this audience with a red-green deficiency.
+     Text is NEVER blurred. The backlight BEHIND the row is. */
+  --flare: #dd7163; /* red flag. 100% illum,  4px backlight — sharp, hot  */
+  --caution: var(--caustic); /* watch.     55% illum, 14px backlight              */
+  --settle: #5fbfa3; /* grounded.  25% illum, 28px backlight — wide, soft */
+
+  /* ── Depth model: four layers ──
+     L0 ground · L1 evidence (never readable) · L2 glass (all body text) ·
+     L3 lit (one per viewport, owns the glow and the chromatic edge). */
+  --l1-blur: 18px;
+  --l1-opacity: 0.25; /* ceiling for an ordinary drift layer. */
+  /* The exception, stated as a value instead of as prose: content behind a
+     REFRACTING SOLID may reach this, staying unreadable by DISPLACEMENT rather
+     than by faintness. It was a sentence in this comment, which meant
+     scripts/contrast.mjs had to hardcode its own guess at the worst case (0.4 —
+     harsher than the ceiling, short of the exception, and chosen by nobody in
+     particular). Declared here so the gate sweeps the range the DESIGN
+     sanctions rather than a number a script invented.
+
+     Neither of these is consumed by a CSS rule, and that is fine: like
+     `--unresolved-floor` below, they are bounds this system states about
+     itself so a machine can check them. */
+  --l1-opacity-max: 0.55;
+  --l2-blur: blur(18px) saturate(1.15);
+
+  /* ── Glass ──
+     Sanctioned on FIVE surfaces site-wide, and only where content genuinely
+     moves behind it. Blur over a solid ground is pure compositor cost; that
+     argument was already in this file and it was correct.
+     RULE: glass over a live L1 carries primary text only. Captions, source
+     lines and index markers sit on solid surfaces. */
+  --glass-light: rgba(251, 252, 252, 0.62);
+  --glass-dark: rgba(18, 58, 60, 0.42);
+  --glass-edge-light: inset 0 1px 0 rgba(255, 255, 255, 0.9), inset 0 0 0 1px rgba(16, 20, 22, 0.06);
+  --glass-edge-dark: inset 0 1px 0 rgba(190, 230, 228, 0.22), inset 0 0 0 1px rgba(190, 230, 228, 0.08);
+
+  /* ── Radius: two values. There is no third. ── */
+  --r-lens: 20px; /* panels, cards, glass surfaces */
+  --r-node: 8px; /* chips, bars, inputs, small elements */
+
+  /* ── Motion: three durations, two easings ──
+     Three is enough because scrubbed set-piece motion has no duration at all.
+     --e-travel exists because light does not decelerate along a path; an
+     exponential curve on a travelling light reads as a slug. */
+  --t-resolve: 720ms; /* something coming into focus */
+  --t-shift: 260ms; /* a state change */
+  --t-touch: 120ms; /* press / hover */
+  --e-optics: cubic-bezier(0.16, 1, 0.3, 1); /* focus pull. ≤2% overshoot allowed */
+  --e-travel: cubic-bezier(0.65, 0, 0.35, 1); /* light along a path. symmetric */
+
+  /* ── Drift: ambient environmental light ──
+     ONE per dark section (four total). Never attached to an element — that is
+     precisely what keeps state-glow meaningful, because a reader can tell them
+     apart: drift moves and never coincides with content; state glow sits still
+     behind something that means something.
+     Distinct from the "caustic streak" graphic device (max 2 per page). */
+  --drift-opacity: 0.08;
+  --drift-ceiling: 0.12;
+  --drift-period: 16s;
+
+  /* Unresolved state. Text dims no further than this, and the COMPOSITE is what
+     gets measured, never the token: --haze-ink was #4a5c5a until the gate caught
+     it landing on 4.42:1 here (it measured a comfortable 6.28 against the bare
+     ground, which is precisely the reading that means nothing).
+     Preferred mechanism is not opacity at all but Redaction's degradation cut,
+     the typeface performing the loss of resolution. This floor is the backstop.
+     Verify with: node scripts/contrast.mjs */
+  --unresolved-floor: 0.85;
+
+  /* ── The ambient light source, as numbers the gate can read ────────────────
+     `LivingField`'s beam is three gradient layers stacked over the ground: a
+     wide bloom, a tight core, and a ring of rays around it. Its brightness is
+     not a taste value — the source sits at the centre of a FIXED layer, and
+     across 21 scroll positions 18 have real text within 140px of that point, so
+     copy is composited over it for most of the page.
+
+     Declared here, and consumed by both the component and scripts/contrast.mjs,
+     for the reason this file keeps re-learning: a value copied into the gate is
+     a value that drifts out of the product. These are the only alphas in the
+     stack, so reading them is the same as reading the stack.
+
+     There is ONE composite to gate — ground -> bloom -> core — because the
+     light is one radial with a falloff and nothing else. An earlier version
+     added a ring of rays around it, which needed a second composite AND a rule
+     that the two never overlap; deleting the rays deleted both.
+
+     Both layers are `--prism` now. The ceiling solved against `--fg-2` on the
+     dark ground is far above these values (8% / 12% measures 6.25:1): the beam
+     is quiet because the design wants it quiet, not because AA forced it down.
+     That headroom is the point of gating it — it says so rather than assuming. */
+  --beam-bloom: 8%;
+  --beam-core: 12%;
+
+  /* ── Ground-aware text roles ───────────────────────────────────────────────
+     The luminance arc means the SAME component renders on a light ground at
+     the top of the page and a dark ground in the middle. Components therefore
+     never name a colour: they name a ROLE, and the role re-points when the
+     ground flips.
+
+     This is the whole reason the arc is one CSS switch on a data attribute
+     rather than ~200 animated colour properties, which is what a naive
+     scroll-driven light-to-dark transition turns into. */
+  --fg: var(--ink-next); /* primary text   */
+  --fg-2: var(--haze-ink); /* secondary text */
+  --fg-rule: rgba(16, 20, 22, 0.14); /* hairlines. Non-text: never carries words. */
+  --fg-surface: var(--float); /* solid panel on the current ground */
+  --fg-glass: var(--glass-light); /* sanctioned glass on the current ground */
+
+  /* Severity also has to flip, and this is not cosmetic.
+     --flare/--caustic/--settle are tuned for the dark ground and FAIL on light
+     (--flare is 2.92:1 on --clear). The reverse is worse: the old dark-tuned
+     reds read 2.45:1 on --medium-deep, which is where the ledger now lives.
+     So severity names a role too, and the hue shifts with the ground while the
+     ILLUMINATION encoding (brightness + backlight blur) carries the meaning
+     consistently on both. Hue was never the channel; see constitution §1. */
+  --sev-flag: #a8301b;
+  --sev-watch: #985017;
+  --sev-grounded: #1a6438;
+
+  /* ── Per-ground values, light theme ──
+     Both grounds are pastels here, so both take the same dark ink and the same
+     dark-tuned severity set. `[data-theme="dark"]` overrides all of these. */
+  --rule-a: rgba(20, 32, 28, 0.16);
+  --rule-b: rgba(20, 32, 28, 0.16);
+  --surface-b: #eaf3ee; /* solid card on the mint ground */
+  --glass-b: var(--glass-light);
+
+  /* Danger at SMALL text sizes. `--sev-flag` is tuned for severity labels at
+     >=19px, where AA-large (3:1) applies. Row actions like "Delete" set it at
+     ~11px, which needs the full 4.5:1 — on dark it measured 3.06:1 and read as
+     a disabled control. This is the same role, solved for body-size text. */
+  --sev-flag-text: #a8301b;
+  /* The other two thirds of the same idea. `--sev-flag-text` already existed
+     because the base `--sev-flag` was unreadable at body size; `--sev-watch`
+     and `--sev-grounded` had the same problem and never got the same fix, so
+     both are light-ground values used unchanged in BOTH themes. Measured on the
+     dark card they are 1.9-2.0:1 — fine here on light, invisible there.
+     These two are the missing cuts. Light keeps the existing values (5.51:1 and
+     6.59:1 on --float); dark gets a lighter one below. */
+  --sev-watch-text: #985017;
+  --sev-grounded-text: #1a6438;
+
+  --sev-flag-a: #a8301b;
+  --sev-watch-a: #985017;
+  --sev-grounded-a: #1a6438;
+  --sev-flag-b: #a8301b;
+  --sev-watch-b: #985017;
+  --sev-grounded-b: #1a6438;
+}
+
+/* Both grounds are declared as ATTRIBUTE rules, not just :root defaults, so a
+   section can re-point the roles for its own subtree at any nesting depth.
+   The closing needs exactly that: the arc is one-way and its dark layer is
+   fixed behind everything, so the CTA bookends the hero by laying an opaque
+   light block over it and re-declaring light inside. The footer then does the
+   reverse within that block. Without these, a nested section inherits <html>'s
+   ground and renders light text on a light surface. */
+/* Ground A — where the page starts. */
+[data-ground="light"] {
+  --fg: var(--ink-a);
+  --fg-2: var(--haze-a);
+  --fg-rule: var(--rule-a);
+  --fg-surface: var(--float);
+  --fg-glass: var(--glass-light);
+  --sev-flag: var(--sev-flag-a);
+  --sev-watch: var(--sev-watch-a);
+  --sev-grounded: var(--sev-grounded-a);
+}
+
+/* Ground B — where the arc arrives. Set on <html> by the scroll progress that
+   drives the crossfade itself (see landing/Ground.tsx).
+   In the LIGHT theme this is the mint pastel and still takes dark text, which
+   is why nothing inverts mid-arc any more. */
+[data-ground="dark"] {
+  --fg: var(--ink-b);
+  --fg-2: var(--haze-b);
+  --fg-rule: var(--rule-b);
+  --fg-surface: var(--surface-b);
+  --fg-glass: var(--glass-b);
+  --sev-flag: var(--sev-flag-b);
+  --sev-watch: var(--sev-watch-b);
+  --sev-grounded: var(--sev-grounded-b);
+}
+
+/* ── The dark theme ───────────────────────────────────────────────────────────
+   Two greens, dark to darker. No second hue: the pairing is a ground and its
+   own depth, which is what "viewed edge-on" actually looks like as glass gets
+   thicker. `--ground-deep` stays the gradient terminus and never becomes a
+   surface (constitution §1), so `--ground-b` is the darker SURFACE tone. */
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --ground-a: #123a3c;
+  --ground-b: #0e2f31;
+  --ground-deep: #0a2224;
+  --float: color-mix(in srgb, #123a3c 92%, white);
+
+  --ink-a: #eaf2f1;
+  --haze-a: #d4e6e4;
+  --ink-b: #eaf2f1;
+  --haze-b: #d4e6e4;
+
+  --rule-a: rgba(234, 242, 241, 0.16);
+  --rule-b: rgba(234, 242, 241, 0.16);
+  --surface-b: color-mix(in srgb, #0e2f31 92%, white);
+  --glass-b: var(--glass-dark);
+
+  /* The glass slab and its edge follow the theme too. Left on the light tokens
+     they wash the dark ground out to a grey-green and the ground stops reading
+     as green at all. Components name `--glass-light` directly in a few places,
+     so it is re-pointed here rather than chased through the call sites. */
+  --glass-light: rgba(18, 58, 60, 0.42);
+  --glass-edge-light: var(--glass-edge-dark);
+
+  --sev-flag-text: #ff9385; /* 5.21:1 / 4.52:1 on the two dark surfaces */
+  --sev-watch-text: #f2b463; /* 5.31:1 on the dark card */
+  --sev-grounded-text: #6fd0ae; /* 5.23:1 on the dark card */
+
+  /* Severity on dark is the illuminated set. */
+  --sev-flag-a: var(--flare);
+  --sev-watch-a: var(--caustic);
+  --sev-grounded-a: var(--settle);
+  --sev-flag-b: var(--flare);
+  --sev-watch-b: var(--caustic);
+  --sev-grounded-b: var(--settle);
+
+  /* AND THE BASE TOKENS, WHICH WERE LEFT ON THE LIGHT SET.
+     Read this with the `[data-ground]` blocks above: they are the only place
+     `--sev-flag` / `--sev-watch` / `--sev-grounded` were ever re-pointed at the
+     per-ground values, and `data-ground` is set by the LANDING's scroll
+     progress alone (landing/Ground.tsx). Nothing in the dashboard sets it.
+     So every dashboard surface fell through to the `:root` definitions — which
+     are the light-ground severity set, #a8301b / #985017 / #1a6438 — and
+     painted dark reds, browns and greens onto the dark green card.
+     Measured before this line existed: the recommendation gate banner at
+     **1.59:1**, and the dashboard resolving `--sev-watch` to #985017 while the
+     landing, which does set a ground, resolved the same token to #f2a23c.
+     Two surfaces of one app disagreeing about what "watch" means.
+     Declaring the base here makes the theme self-sufficient: a surface gets
+     theme-correct severity whether or not it opts into a ground, and the
+     `[data-ground]` blocks keep working unchanged for the one page that does. */
+  --sev-flag: var(--flare);
+  --sev-watch: var(--caustic);
+  --sev-grounded: var(--settle);
+}
+
+html {
+  /* Matches the dark default in useTheme.ts / the boot script, so form controls
+     and scrollbars are right even on the frame before `data-theme` lands. */
+  color-scheme: dark;
+  font-family: var(--font-sans);
+  background-color: var(--clear);
+  scroll-behavior: smooth;
+}
+/* In-page anchors must clear the fixed header. */
+section[id] { scroll-margin-top: 90px; }
+html[data-motion="off"] { scroll-behavior: auto; }
+
+
+body {
+  background-color: var(--clear);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  border-color: hsl(var(--border));
+}
+
+::selection {
+  background: color-mix(in srgb, var(--caustic) 30%, transparent);
+  color: var(--fg);
+}
+
+/* Grain is retired — the page is crisp white. `.ansyra-grain` is kept as an
+   inert hook so the many call sites don't need touching. */
+.ansyra-grain::before { content: none; }
+
+/* `.ansyra-glass` is deleted (Phase 0, refraction). It had ZERO call sites: the
+   2026-07 document rebuild replaced every glass card with an exhibit and never
+   removed the CSS. Its central argument survives in the new system and is worth
+   restating, because it is the reason the Refraction glass spec is a closed list
+   of five surfaces rather than a default: blur over a SOLID ground buys nothing
+   and costs a compositor pass. Glass is earned by having something moving behind
+   it. See docs/constitution.md. */
+
+/* Elevation utilities */
+.ansyra-elev-1 { box-shadow: var(--elev-1); }
+.ansyra-elev-2 { box-shadow: var(--elev-2); }
+.ansyra-elev-3 { box-shadow: var(--elev-3); }
+
+/* ─── The sheet ──────────────────────────────────────────────────────────────
+   The document is a physical sheet lying on a desk. This is the difference
+   between "ink on a flat background" and an object with presence, and it is
+   what the first build was missing entirely.
+
+   The shadow carries a real OFFSET and a soft blur (a zero-offset halo is
+   decoration, not depth) and is tinted from the desk hue rather than black. */
+/* .ansyra-desk / .ansyra-sheet deleted (B2 cleanup). The sheet-on-desk conceit
+   went with the document concept in A2, when the page stopped sitting ON
+   something and started moving THROUGH something. Their call sites were removed
+   then; the rules were not. */
+/* The sheet's own edge: paper has a cut edge, not a border. */
+
+/* `.ansyra-ruled` deleted (Phase 0, refraction): zero call sites. Ruled stock is
+   the retired document concept's texture and does not survive the rework.
+
+   `.ansyra-grain-layer` was declared TWICE in this file with different opacity
+   (0.32 here, 0.05 further down). Same specificity, so the later rule silently
+   won and the first was dead weight that read as intentional. Deduped to a
+   single declaration at the value that was actually rendering; see below. */
+
+/* ─── Document furniture ─────────────────────────────────────────────────────
+   The landing's components are parts of a document, not generic UI. A stock
+   rounded card inside this world is a lapse, so the old glass-card system is
+   gone and these replace it. See DESIGN.md.
+
+   No backdrop-filter anywhere below: these sit on a SOLID ground, so there is
+   nothing behind them to blur and the blur would be pure compositor cost. */
+
+/* An EXHIBIT replaces the card. Numbered, ruled, and flush to the grid rather
+   than floating: documents do not have drop shadows. */
+.ansyra-exhibit {
+  position: relative;
+  background: var(--fg-surface);
+  border-top: 1px solid var(--fg);
+  border-bottom: 1px solid var(--fg-rule);
+  transition:
+    background 220ms ease,
+    border-color 220ms ease;
+}
+.ansyra-exhibit__no {
+  font-family: var(--font-sans);
+  font-size: var(--step-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-2);
+}
+@media (hover: hover) and (pointer: fine) {
+  a.ansyra-exhibit {
+    transition:
+      transform 260ms var(--ease-entrance),
+      box-shadow 260ms var(--ease-entrance),
+      background 200ms ease,
+      border-color 200ms ease;
+  }
+  a.ansyra-exhibit:hover {
+    background: var(--fg-surface);
+    border-bottom-color: var(--fg);
+    transform: translateY(-2px);
+    box-shadow:
+      0 2px 4px rgba(38, 42, 34, 0.06),
+      0 12px 24px -10px rgba(38, 42, 34, 0.22);
+  }
+}
+.ansyra-exhibit:focus-visible,
+.ansyra-exhibit:focus-within {
+  outline: 2px solid var(--fg);
+  outline-offset: 3px;
+}
+
+/* `.ansyra-tag` (the MARGIN TAG) deleted (Phase 0, refraction): zero call sites. */
+
+/* ─── The replacement label register ─────────────────────────────────────────
+   The retired vocabulary (IN RE:, EXHIBIT 01, PREPARED FOR) is not being
+   swapped for a telemetry register, which is the same costume in a nerdier
+   font. Structure is carried by the luminance arc and by type hierarchy; the
+   only surviving marker is a numeral, and only where the reader can count the
+   things being numbered.
+
+   Note the tracking: 0.02em, not the 0.16em of the caption below it. Wide
+   tracked uppercase micro-caps is the single loudest signature of the concept
+   being retired, and it does not survive the rework. */
+.ansyra-index {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-sans);
+  font-size: var(--step-xs);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  color: var(--fg-2);
+}
+
+/* A STUDY ROW. Six of these form the evidence index that replaced the card
+   grid. Flush to the page rather than floating: an index is a list of things
+   that exist, not a set of objects to admire. The hover is a lift in
+   ILLUMINATION rather than elevation, which is the concept's own vocabulary. */
+.ansyra-study {
+  position: relative;
+  transition:
+    background var(--t-shift) ease,
+    border-color var(--t-shift) ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .ansyra-study:hover {
+    background: color-mix(in srgb, var(--fg) 4%, transparent);
+    border-bottom-color: var(--fg);
+  }
+}
+.ansyra-study:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: -2px;
+}
+
+/* TITLE BLOCK — the legal caption that opens the document. */
+.ansyra-caption {
+  font-family: var(--font-sans);
+  font-size: var(--step-xs);
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--fg-2);
+}
+
+/* .ansyra-struck / .ansyra-inserted deleted (B1). The redline now lives in
+   landing/Redline.tsx, which draws its strike as a positioned element rather
+   than as `text-decoration: line-through`.
+
+   That was not a refactor for its own sake. text-decoration is rendered
+   un-hinted at 1px and was being tinted through a color-mix over a serif at
+   ~30px, which is why the old strike looked visibly jagged. A positioned rule
+   is crisp at any size, and unlike text-decoration it can be animated, which
+   the static version could not be. */
+
+/* Procedural bond grain. Fixed and pointer-events:none so it never repaints
+   with scrolling content. */
+.ansyra-grain-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: multiply;
+}
+
+/* ─── Operate labels ─────────────────────────────────────────────────────────
+   ONE label style for the dashboard. It replaces 97 micro-caps eyebrows that
+   had accreted NINE different tracking values (0.12em through 0.42em) at 10px
+   in a monospace face. That was three separate problems at once: monospace worn
+   as a costume for "technical", type below the 12px floor, and a tracked
+   uppercase eyebrow over practically every block.
+
+   Sentence case, text face, 12px, modest tracking. Legible at arm's length. */
+.ansyra-label {
+  font-family: var(--font-sans);
+  font-size: var(--step-xs);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fg-2);
+}
+
+/* ─── Pressable surfaces ────────────────────────────────────────────────────
+   The CTA is a STAMP BLOCK, not a floating pill: squared, ruled, and set in
+   the document's own vocabulary. Press feedback is mandatory (there was none
+   at all before this redesign) and is the cheapest possible "the interface
+   heard you" signal. */
+.ansyra-cta {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--fg);
+  color: var(--fg-surface);
+  border: 1px solid var(--fg);
+  border-radius: var(--r-node);
+  font-family: var(--font-sans);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  transition:
+    transform var(--t-touch) var(--e-optics),
+    background var(--t-shift) ease,
+    color var(--t-shift) ease,
+    box-shadow var(--t-shift) ease;
+}
+.ansyra-cta:active {
+  transform: scale(0.985);
+}
+@media (hover: hover) and (pointer: fine) {
+  .ansyra-cta:hover {
+    background: transparent;
+    color: var(--fg);
+  }
+}
+.ansyra-cta:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: 3px;
+}
+
+/* PRIMARY. The one CTA that carries the accent as a FILL, which is one of the
+   three sanctioned fill sites for --caustic (constitution §1). Its text is
+   --ink-next on BOTH grounds and never --fg: amber is a light surface either
+   way, so the label does not flip with the ground. --ink-next on --caustic is
+   8.83:1; white on it is 2.10:1 and is a bug, not a variant. */
+.ansyra-cta--primary {
+  background: var(--caustic);
+  /* --on-accent, NOT --ink-next: the latter inverts with the theme and this
+     fill does not. See the token's note. */
+  color: var(--on-accent);
+  border-color: var(--caustic);
+}
+@media (hover: hover) and (pointer: fine) {
+  .ansyra-cta--primary:hover {
+    background: var(--caustic);
+    color: var(--on-accent);
+    /* Glow means "pressable" here, which is a state. Constitution §4. */
+    box-shadow: 0 0 0 1px var(--caustic), 0 6px 28px -6px var(--caustic);
+  }
+}
+.ansyra-cta--primary:focus-visible {
+  outline-color: var(--caustic);
+}
+
+/* Secondary: ruled, unfilled. */
+.ansyra-cta--ghost {
+  background: transparent;
+  color: var(--fg);
+}
+@media (hover: hover) and (pointer: fine) {
+  .ansyra-cta--ghost:hover {
+    background: var(--fg);
+    color: var(--fg-surface);
+  }
+}
+
+/* Nav links. Colour change on hover AND focus-visible, so the keyboard path
+   matches the pointer path. */
+.ansyra-navlink {
+  color: var(--fg-2);
+  transition: color var(--t-shift) ease, border-color var(--t-shift) ease;
+  border-bottom: 1px solid transparent;
+  padding-bottom: 2px;
+}
+.ansyra-navlink:hover {
+  color: var(--fg);
+  border-bottom-color: var(--fg);
+}
+.ansyra-navlink:focus-visible {
+  color: var(--fg);
+  outline: 2px solid var(--fg);
+  outline-offset: 4px;
+}
+
+/* The two view controls (theme, motion). No border, no fill, no label: an
+   18px mark inside a 44px target. At rest they sit at the secondary text
+   colour so they read as available rather than as something to press. */
+.ansyra-viewglyph {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin: -13px 0; /* keeps the 44px target from setting the nav's height */
+  color: var(--fg-2);
+  opacity: 0.7;
+  background: none;
+  border: 0;
+  border-radius: 999px;
+  transition: color var(--t-shift) ease, opacity var(--t-shift) ease;
+}
+.ansyra-viewglyph:hover {
+  color: var(--fg);
+  opacity: 1;
+}
+/* The ring is drawn on the 44px box, not the 18px mark, so the focus target
+   and the hit target are the same shape. Legible on both grounds. */
+.ansyra-viewglyph:focus-visible {
+  color: var(--fg);
+  opacity: 1;
+  outline: 2px solid var(--fg);
+  outline-offset: -4px;
+}
+
+/* NO SYNTHESISED OBLIQUES.
+   Neither shipped face has an italic cut: Bespoke Slab has none at all, and
+   General Sans ships only a normal. Asking for `italic` therefore made the
+   browser SHEAR the glyphs, which on a slab serif is the most obvious tell of
+   a typeface used carelessly, and it had quietly happened in three places
+   (a deal note, a synergy summary, a research pull-quote) the moment the
+   pairing changed.
+
+   `font-synthesis-style: none` makes that failure render as upright text
+   instead of as a fake slant. The three call sites had the class removed as
+   well, so the code says what it renders; this is the guard against the next
+   one, not a substitute for fixing them. */
+.font-serif,
+.font-display,
+.font-heading,
+[class*="font-serif"],
+[class*="font-display"] {
+  font-synthesis-style: none;
+}
+
+/* THE SAME MISTAKE IN THE OTHER AXIS: A FAKE BOLD.
+   `<strong>` and `<b>` default to `font-weight: bolder`, which resolves to 700 —
+   and General Sans ships 400 and 500 only, so every one of them was a
+   SYNTHESISED bold, the browser smearing the 500 outlines sideways. Found by
+   sweeping computed weights across the app, not by looking: at 12-13px a faux
+   bold reads as slightly muddy rather than as obviously wrong, which is exactly
+   why it survived. Eleven call sites, the loudest of them the AI disclaimer on
+   /legal/terms.
+
+   500 is the real emphasis weight in this system, so that is what emphasis
+   means. And `font-synthesis-weight: none` is the guard against the next one:
+   any future request for 600 or 700 now falls back to the nearest face the
+   family actually has instead of being faked. Inherited from the root, so it
+   covers everything including anything pasted in later. */
+strong,
+b {
+  font-weight: 500;
+}
+
+html {
+  font-synthesis-weight: none;
+}
+
+/* ─── Type helpers ──────────────────────────────────────────────────────── */
+.font-serif { font-family: var(--font-serif); }
+.font-heading { font-family: var(--font-heading); }
+.font-sans { font-family: var(--font-sans); }
+.font-mono { font-family: var(--font-mono); }
+
+/* ─── Chart draw-on animations (landing + article visuals) ──────────────────
+   Reduced motion: everything renders in place instantly (see media block). */
+@keyframes ansyra-chart-rise-kf { from { transform: scaleY(0.02); } to { transform: scaleY(1); } }
+.ansyra-chart-rise { animation: ansyra-chart-rise-kf 700ms cubic-bezier(0.2, 0.7, 0.3, 1) backwards; }
+@keyframes ansyra-chart-grow-kf { from { transform: scaleX(0.02); } to { transform: scaleX(1); } }
+.ansyra-chart-grow { animation: ansyra-chart-grow-kf 700ms cubic-bezier(0.2, 0.7, 0.3, 1) backwards; }
+@keyframes ansyra-chart-fade-kf { from { opacity: 0; } to { opacity: 1; } }
+.ansyra-chart-fade { animation: ansyra-chart-fade-kf 500ms ease backwards; }
+@keyframes ansyra-chart-draw-kf { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+.ansyra-chart-draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: ansyra-chart-draw-kf 1100ms cubic-bezier(0.5, 0, 0.3, 1) forwards;
+}
+@keyframes ansyra-chart-sweep-kf { to { stroke-dashoffset: 0; } }
+.ansyra-chart-sweep { animation: ansyra-chart-sweep-kf 1200ms cubic-bezier(0.4, 0, 0.3, 1) 200ms forwards; }
+  html[data-motion="off"] .ansyra-chart-rise,
+html[data-motion="off"] .ansyra-chart-grow,
+html[data-motion="off"] .ansyra-chart-fade { animation: none; }
+  html[data-motion="off"] .ansyra-chart-draw { animation: none; stroke-dashoffset: 0; }
+  html[data-motion="off"] .ansyra-chart-sweep { animation: none; stroke-dashoffset: 0; }
+
+
+/* ─── The caustic floor (B9) ─────────────────────────────────────────────────
+   Light that entered at the hero, arriving at the bottom of the page. Three
+   slow shapes on long prime-ish periods so they never visibly sync.
+
+   transform ONLY. The blur is static and rasterizes once; animating it would
+   put a 64px gaussian on the paint path for the life of the page, which is
+   exactly the cost the constitution bans scroll-linked filters for. Amplitude
+   is set inline at the ambient ceiling. */
+@keyframes ansyra-caustic-drift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(4%, -3%, 0) scale(1.08);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+.ansyra-caustic-drift {
+  animation-name: ansyra-caustic-drift;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  will-change: transform;
+}
+  html[data-motion="off"] .ansyra-caustic-drift {
+    animation: none;
+  }
+
+
+/* ─── Cursor-alive surfaces ──────────────────────────────────────────────────
+   Cards and sections lift toward the reader under the cursor — used across
+   the landing AND the dashboard. Motion-safe only; focus-visible included. */
+.ansyra-alive {
+  transition: transform 260ms cubic-bezier(0.2, 0.7, 0.3, 1),
+              box-shadow 260ms ease, border-color 260ms ease;
+}
+  html:not([data-motion="off"]) .ansyra-alive:hover,
+html:not([data-motion="off"]) .ansyra-alive:focus-visible,
+html:not([data-motion="off"]) .ansyra-alive:focus-within {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 40px rgba(46, 43, 35, 0.14);
+    border-color: var(--fg) !important;
+  }
+
+  html[data-motion="off"] .ansyra-alive:hover,
+html[data-motion="off"] .ansyra-alive:focus-visible,
+html[data-motion="off"] .ansyra-alive:focus-within {
+    border-color: var(--fg) !important;
+    box-shadow: 0 6px 22px rgba(46, 43, 35, 0.12);
+  }
+
+
+
+
+
+
+/* ─── Stroke draw-in for architectural sketch lines ─────────────────────── */
+@keyframes stroke-draw {
+  from { stroke-dashoffset: 1000; }
+  to { stroke-dashoffset: 0; }
+}
+.stroke-draw {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: stroke-draw 3.5s cubic-bezier(0.6, 0.1, 0.3, 1) forwards;
+}
+
+/* ─── Wax-seal spinning micro-animation ─────────────────────────────────── */
+@keyframes wax-shimmer {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-4deg); }
+}
+
+/* ─── Page-fold transition (CSS 3D) ─────────────────────────────────────── */
+.ansyra-fold-stage {
+  perspective: 2000px;
+  transform-style: preserve-3d;
+}
+.ansyra-fold-page {
+  transform-origin: bottom right;
+  backface-visibility: hidden;
+  transition: transform 800ms cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 800ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.ansyra-fold-page.folded {
+  transform: rotate3d(-1, 1, 0, 165deg);
+  opacity: 0;
+}
+
+/* ─── Paper crumple (CSS approximation, replaced by Three.js when possible) ── */
+@keyframes crumple-out {
+  0% { transform: scale(1) rotate(0deg); filter: blur(0); opacity: 1; }
+  35% {
+    transform: scale(0.92) rotate(-2deg) skew(-3deg, 1deg);
+    filter: blur(0.4px);
+    opacity: 0.9;
+  }
+  70% {
+    transform: scale(0.6) rotate(-14deg) skew(-8deg, 3deg);
+    filter: blur(1px);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(0.05) rotate(-45deg);
+    filter: blur(3px);
+    opacity: 0;
+  }
+}
+.crumple-out {
+  animation: crumple-out 1100ms cubic-bezier(0.5, 0, 0.3, 1) forwards;
+  transform-origin: 60% 60%;
+}
+
+/* ─── Cross-fade fallback ───────────────────────────────────────────────── */
+@keyframes soft-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.soft-fade-in { animation: soft-fade-in 500ms ease forwards; }
+
+/* ─── Recharts + dashboard reskin ───────────────────────────────────────── */
+.recharts-cartesian-axis-tick-value tspan { fill: var(--fg-2); font-family: var(--font-mono); }
+.recharts-tooltip-wrapper { filter: drop-shadow(0 2px 12px rgba(44, 36, 22, 0.15)); }
+
+/* ─── Print / PDF export (Phase 11.3) ────────────────────────────────────────
+   The dossier's "Export PDF" button calls window.print(); this sheet hides app
+   chrome, shows the letterhead + disclaimer, and keeps cards intact. */
+@media print {
+  .no-print { display: none !important; }
+  .print-only { display: block !important; }
+  /* Collapsed-on-screen detail that must still reach the PDF (Phase 15.9):
+     a recommendation's evidence, counterarguments and outcome ledger are the
+     part a committee actually needs on paper. Overrides Tailwind's `hidden`. */
+  .print-expand { display: block !important; }
+  body { background: #fff !important; }
+  .ansyra-grain { background: #fff !important; }
+  .ansyra-grain::before { display: none !important; }
+  main { max-width: 100% !important; padding: 0 !important; }
+  a { text-decoration: none !important; color: inherit !important; }
+  /* Avoid splitting a card across pages. */
+  .rounded-sm { break-inside: avoid; }
+
+  /* Decision pack (Phase 15.21) — a FOCUSED export, not the whole dossier.
+     `printing-pack` is put on <body> for the duration of the print call, and
+     everything below main is hidden except the pack itself. Scoped by body
+     class rather than by a separate route so the pack keeps the letterhead,
+     the page-break rules and the .no-print discipline already defined above,
+     and so an ordinary "Export PDF" is completely unaffected. */
+  body.printing-pack main
+    *:not(:has(.decision-pack)):not(.decision-pack):not(.decision-pack *) {
+    display: none !important;
+  }
+  body.printing-pack .decision-pack { display: block !important; }
+  body.printing-pack .decision-pack section { break-inside: avoid; }
+}
+.print-only { display: none; }
+
+/* ─── Phase 12.5: backward soft-fade-out + staggered act entrances ─────────── */
+@keyframes soft-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+.soft-fade-out { animation: soft-fade-out 400ms ease forwards; }
+
+/* Staggered entrance for each act's top-level content blocks (`act-stagger`).
+   Two tiers so the page is never dead, only ever *calmer*:
+   • full motion  → rise + fade (14px lift).
+   • reduced      → opacity-only fade — alive and premium, but zero movement,
+                    so it can't trigger vestibular discomfort. */
+@keyframes stagger-rise { to { opacity: 1; transform: none; } }
+@keyframes stagger-fade { to { opacity: 1; } }
+
+  html:not([data-motion="off"]) .act-stagger > * {
+    opacity: 0;
+    transform: translateY(14px);
+    animation: stagger-rise 500ms ease-out forwards;
+  }
+
+  html[data-motion="off"] .act-stagger > * {
+    opacity: 0;
+    animation: stagger-fade 640ms ease-out forwards;
+  }
+
+/* Stagger delays apply in both tiers — the sequence reads the same either way. */
+.act-stagger > *:nth-child(1) { animation-delay: 0ms; }
+.act-stagger > *:nth-child(2) { animation-delay: 80ms; }
+.act-stagger > *:nth-child(3) { animation-delay: 160ms; }
+.act-stagger > *:nth-child(4) { animation-delay: 240ms; }
+.act-stagger > *:nth-child(5) { animation-delay: 320ms; }
+.act-stagger > *:nth-child(6) { animation-delay: 400ms; }
+.act-stagger > *:nth-child(7) { animation-delay: 480ms; }
+.act-stagger > *:nth-child(8) { animation-delay: 560ms; }
+.act-stagger > *:nth-child(9) { animation-delay: 640ms; }
+.act-stagger > *:nth-child(10) { animation-delay: 720ms; }
+
+/* Reduced motion: soften the page-turn transitions to a quick fade (no 3D
+   fold / crumple), but keep the gentle cross-fade so acts still transition. */
+  html[data-motion="off"] .ansyra-fold-page.folded,
+html[data-motion="off"] .crumple-out { animation: soft-fade-out 200ms ease forwards; }
+  html[data-motion="off"] .soft-fade-in { animation: stagger-fade 300ms ease forwards; }
+
+
+/* ─── The movement cards (B5) ────────────────────────────────────────────────
+   Dealt out below the hero. The hover lifts toward the reader rather than
+   changing colour: these are objects at a depth, and depth is the channel the
+   whole set piece is built on. */
+.ansyra-movement {
+  position: relative;
+  transition:
+    transform var(--t-shift) var(--e-optics),
+    box-shadow var(--t-shift) var(--e-optics);
+}
+@media (hover: hover) and (pointer: fine) {
+  .ansyra-movement:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--elev-3);
+  }
+}
+.ansyra-movement:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: 3px;
+}
+
+/* ─── The lens (B6) ──────────────────────────────────────────────────────────
+   Skinned on top of input[type=range] rather than rebuilt as a draggable div,
+   so arrow keys, Home/End, touch and screen-reader announcement all arrive for
+   free and correct. The thumb is the only place --caustic appears as a fill
+   outside the CTA and active states. */
+.ansyra-lens {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12rem;
+  height: 1.5rem;
+  background: transparent;
+  cursor: ew-resize;
+}
+.ansyra-lens::-webkit-slider-runnable-track {
+  height: 2px;
+  background: var(--fg-rule);
+  border-radius: 2px;
+}
+.ansyra-lens::-moz-range-track {
+  height: 2px;
+  background: var(--fg-rule);
+  border-radius: 2px;
+}
+.ansyra-lens::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  margin-top: -6px;
+  border-radius: 999px;
+  background: var(--caustic);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--caustic) 20%, transparent);
+}
+.ansyra-lens::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border: none;
+  border-radius: 999px;
+  background: var(--caustic);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--caustic) 20%, transparent);
+}
+.ansyra-lens:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: 4px;
+}
+
+/* ─── The hero drift (B8-still) ──────────────────────────────────────────────
+   Evidence moving behind the glass slab. transform only, long periods, and the
+   list is duplicated in the DOM so the loop has no seam to notice. This is the
+   content the slab refracts; without something genuinely behind it, the glass
+   would be decoration and the constitution would not sanction it. */
+/* ─── The living field ───────────────────────────────────────────────────────
+   Ambient drift for the whole page, not just the hero. This is the layer that
+   answers "the background is monotonous": before it, the only page-wide motion
+   was a scroll-linked opacity crossfade between two flat colours, so nothing
+   moved unless the reader did.
+
+   Deliberately NO `filter: blur()`. Two reasons, and both are rules rather than
+   preferences: unbound blur is banned outright (constitution §0), and a
+   full-viewport blur is a per-frame GPU cost on exactly the mid-range machines
+   this has to stay smooth on. Radial gradients are soft by construction, cost
+   one paint, and then animate on `transform` alone, which is compositor-only.
+
+   The periods are coprime-ish (37s / 53s / 43s / 71s) so the layers never sync
+   into a visible pulse. Ambient light belongs to the GROUND and is never
+   attached to an element (constitution §4), which is why these live on the
+   fixed field behind everything rather than on any section or card. */
+@keyframes ansyra-orb-a {
+  0% { transform: translate3d(-7%, -5%, 0) scale(1); }
+  50% { transform: translate3d(9%, 7%, 0) scale(1.14); }
+  100% { transform: translate3d(-7%, -5%, 0) scale(1); }
+}
+@keyframes ansyra-orb-b {
+  0% { transform: translate3d(6%, 8%, 0) scale(1.08); }
+  50% { transform: translate3d(-8%, -6%, 0) scale(1); }
+  100% { transform: translate3d(6%, 8%, 0) scale(1.08); }
+}
+@keyframes ansyra-orb-c {
+  0% { transform: translate3d(-4%, 6%, 0) scale(1.05); }
+  50% { transform: translate3d(7%, -8%, 0) scale(1.18); }
+  100% { transform: translate3d(-4%, 6%, 0) scale(1.05); }
+}
+/* The caustic sheet: a slow rotation, which is what moving light through a
+   thick edge actually does. Rotation only, so it never repaints. */
+@keyframes ansyra-caustic-turn {
+  from { transform: rotate(0deg) scale(1.35); }
+  to { transform: rotate(360deg) scale(1.35); }
+}
+
+.ansyra-orb,
+.ansyra-caustic-sheet {
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  will-change: transform;
+}
+.ansyra-orb-a { animation-name: ansyra-orb-a; animation-duration: 37s; }
+.ansyra-orb-b { animation-name: ansyra-orb-b; animation-duration: 53s; }
+.ansyra-orb-c { animation-name: ansyra-orb-c; animation-duration: 43s; }
+.ansyra-caustic-sheet {
+  animation-name: ansyra-caustic-turn;
+  animation-duration: 71s;
+  animation-timing-function: linear;
+}
+
+/* A small pressable target. Used for the instruments inside a movement card,
+   which is what replaced that card's dead surface. Sized to 36px minimum so it
+   is a real touch target rather than a text link pretending to be a control. */
+.ansyra-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--fg-rule);
+  color: var(--fg);
+  background: transparent;
+  transition:
+    background var(--t-shift, 240ms) ease,
+    border-color var(--t-shift, 240ms) ease,
+    transform var(--t-shift, 240ms) ease;
+}
+.ansyra-chip:hover,
+.ansyra-chip:focus-visible {
+  background: color-mix(in srgb, var(--caustic) 16%, transparent);
+  border-color: color-mix(in srgb, var(--caustic) 55%, transparent);
+  transform: translateY(-1px);
+}
+
+/* The persona card. Scale is the emphasis, so hovering one genuinely enlarges
+   it — the behaviour the section always implied and never had. Transform and
+   box-shadow only; the disclosure below animates grid-template-rows, which
+   avoids animating `height` on every frame. */
+.ansyra-persona {
+  transition:
+    transform 320ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 320ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.ansyra-persona:hover,
+.ansyra-persona:focus-visible {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: var(--elev-3);
+}
+.ansyra-persona-detail {
+  transition: grid-template-rows 320ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+html[data-motion="off"] .ansyra-persona,
+html[data-motion="off"] .ansyra-persona-detail { transition: none; }
+/* At rest the detail is simply present: the still page is the same
+   composition, not one with content hidden behind an interaction. */
+html[data-motion="off"] .ansyra-persona-detail { grid-template-rows: 1fr !important; }
+
+
+/* The persona deck card. Depth is the only variable — no hue shift, no angle
+   change on the active card — because a stack of cards is the one metaphor that
+   genuinely has depth and nothing else. See landing/PersonaDeck.tsx. */
+.ansyra-deck-card {
+  box-shadow: var(--elev-2);
+  transition: box-shadow 260ms cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: default;
+}
+.ansyra-deck-card[aria-pressed="true"] { box-shadow: var(--elev-3); }
+.ansyra-deck-card:focus-visible {
+  outline: 2px solid var(--caustic);
+  outline-offset: 3px;
+}
+
+/* Display type resolving through the degraded cut. The child carries
+   `.font-display`, which would beat inheritance, so the unresolved state is
+   applied to the child directly. See landing/Reveal.tsx ResolveType. */
+[data-resolve="0"] > * { font-family: var(--font-struck) !important; }
+
+/* The movement plate. Vector, so it follows the theme and costs no request.
+   See landing/MovementPlate.tsx for why this is SVG and not a baked render. */
+.ansyra-plate { display: block; width: 100%; height: auto; }
+
+/* ─── Pipeline stage diagrams ────────────────────────────────────────────────
+   The mechanism behind each AI stage. See landing/diagrams/StageDiagram.tsx.
+
+   TRANSITIONS, NOT KEYFRAMES, and that choice is load-bearing: the lit state is
+   declared once and eased into, so "plays when the stage lights" and "holds the
+   finished state at rest" are the same rule. A keyframe version would need the
+   final state written twice and would replay on every re-render. */
+.ansyra-dia { display: block; width: 100%; max-width: 240px; aspect-ratio: 132 / 64; overflow: visible; }
+
+.ansyra-dia .dia-row,
+.ansyra-dia .dia-slot,
+.ansyra-dia .dia-cite,
+.ansyra-dia .dia-score {
+  fill: var(--fg-2);
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: opacity 420ms cubic-bezier(0.16, 1, 0.3, 1), transform 420ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.ansyra-dia .dia-link,
+.ansyra-dia .dia-bracket,
+.ansyra-dia .dia-frame,
+.ansyra-dia .dia-retry,
+.ansyra-dia .dia-gate,
+.ansyra-dia .dia-blocked {
+  stroke: var(--fg-2);
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  /* Drawn on, using the dash trick rather than any layout property. */
+  stroke-dasharray: 220;
+  stroke-dashoffset: 220;
+  opacity: 0.55;
+  transition: stroke-dashoffset 620ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.ansyra-dia .dia-node {
+  fill: none;
+  stroke: var(--fg-2);
+  stroke-width: 1.25;
+  opacity: 0;
+  transition: opacity 380ms ease;
+}
+
+/* Roles that carry meaning get the accent rather than the ink. */
+.ansyra-dia .dia-row--out { fill: var(--fg-rule); }
+.ansyra-dia .dia-row--landed,
+.ansyra-dia .dia-cite { fill: var(--caustic); }
+.ansyra-dia .dia-node--source,
+.ansyra-dia .dia-node--out { stroke: var(--caustic); }
+.ansyra-dia .dia-score { fill: var(--sev-grounded); }
+/* The gate and the refusal are the one red thing here: this is the stage that
+   says no, and severity is illumination, not decoration. */
+.ansyra-dia .dia-gate,
+.ansyra-dia .dia-blocked { stroke: var(--sev-flag); opacity: 0.9; }
+.ansyra-dia .dia-retry { stroke: var(--sev-flag); stroke-dasharray: 3 4; stroke-dashoffset: 0; opacity: 0; transition: opacity 420ms ease; }
+
+/* Lit. */
+[data-lit="1"].ansyra-dia .dia-row,
+[data-lit="1"].ansyra-dia .dia-slot,
+[data-lit="1"].ansyra-dia .dia-cite,
+[data-lit="1"].ansyra-dia .dia-score { opacity: 0.9; transform: none; }
+[data-lit="1"].ansyra-dia .dia-row--out { opacity: 0.35; }
+[data-lit="1"].ansyra-dia .dia-link,
+[data-lit="1"].ansyra-dia .dia-bracket,
+[data-lit="1"].ansyra-dia .dia-frame,
+[data-lit="1"].ansyra-dia .dia-gate,
+[data-lit="1"].ansyra-dia .dia-blocked { stroke-dashoffset: 0; }
+[data-lit="1"].ansyra-dia .dia-node { opacity: 0.9; }
+[data-lit="1"].ansyra-dia .dia-retry { opacity: 0.7; }
+
+  html[data-motion="off"] .ansyra-dia * { transition: none !important; }
+
+
+/* ─── Movement card loops ────────────────────────────────────────────────────
+   Small recreations of real Ansyra interactions, built from the same tokens as
+   the interface itself. See landing/loops/MovementLoop.tsx for why these are
+   DOM rather than video.
+
+   EVERY animation here is gated on `[data-play="1"]`. Off-screen the section
+   costs nothing; four loops running continuously behind a viewport nobody is
+   looking at is a battery cost with no viewer. */
+.ansyra-loop {
+  position: relative;
+  height: 148px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--fg) 5%, transparent);
+  border: 1px solid var(--fg-rule);
+  padding: 14px;
+}
+/* STAGE MODE. The loop is the movement card itself rather than a figure on it,
+   so it fills the box, drops the border and the inner radius (the card already
+   clips), and scales its own rhythm up: the same five bars that read at 148px
+   read as a diagram at 600px only if the gaps and the bar height grow with the
+   box. Sizes are `em`-derived from a single font-size so one number moves the
+   whole loop. */
+.ansyra-loop--stage {
+  position: absolute;
+  inset: 0;
+  height: auto;
+  border: 0;
+  border-radius: 0;
+  padding: clamp(28px, 4vw, 56px);
+  background: color-mix(in srgb, var(--fg) 4%, transparent);
+}
+.ansyra-loop--stage .ansyra-loop-bar { height: 12px; border-radius: 6px; }
+.ansyra-loop--stage .ansyra-loop-rows,
+.ansyra-loop--stage .ansyra-loop-doc { gap: 18px; }
+.ansyra-loop--stage .ansyra-loop-chip { font-size: var(--step-sm); padding: 6px 14px; }
+.ansyra-loop--stage .ansyra-loop-type { height: 12px; border-radius: 6px; }
+.ansyra-loop--stage .ansyra-loop-score { font-size: var(--step-title); }
+/* The stage is bottom-weighted by the scrim, so the loop sits in the TOP
+   portion of the card rather than centred behind the copy. */
+.ansyra-loop--stage .ansyra-loop-rows,
+.ansyra-loop--stage .ansyra-loop-doc { justify-content: flex-start; height: 58%; }
+.ansyra-loop--stage .ansyra-loop-stack { height: 58%; }
+
+.ansyra-loop-rows,
+.ansyra-loop-doc {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  height: 100%;
+  justify-content: center;
+}
+.ansyra-loop-doc { position: relative; justify-content: flex-start; }
+
+.ansyra-loop-bar {
+  display: block;
+  height: 7px;
+  border-radius: 3px;
+  opacity: 0.55;
+  transform-origin: left center;
+}
+
+/* 01 Origination: rows arrive from the left and settle in order. */
+@keyframes ansyra-loop-arrive {
+  0%, 8% { transform: translate3d(-14%, 0, 0); opacity: 0; }
+  22%, 78% { transform: translate3d(0, 0, 0); opacity: 0.55; }
+  92%, 100% { transform: translate3d(-14%, 0, 0); opacity: 0; }
+}
+[data-loop="origination"][data-play="1"] .ansyra-loop-bar {
+  animation: ansyra-loop-arrive 5.2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  animation-delay: calc(var(--i) * 180ms);
+}
+
+/* 02 Diligence: a read head passes down and two lines flag behind it. */
+@keyframes ansyra-loop-scan {
+  0%, 6% { transform: translate3d(0, -12%, 0); opacity: 0; }
+  14% { opacity: 1; }
+  78% { transform: translate3d(0, 900%, 0); opacity: 1; }
+  88%, 100% { opacity: 0; }
+}
+.ansyra-loop-scan {
+  position: absolute;
+  left: -14px;
+  right: -14px;
+  height: 2px;
+  top: 4px;
+  background: linear-gradient(90deg, transparent, var(--prism), transparent);
+  opacity: 0;
+}
+[data-loop="diligence"][data-play="1"] .ansyra-loop-scan {
+  animation: ansyra-loop-scan 5.6s linear infinite;
+}
+@keyframes ansyra-loop-flag {
+  0%, 30% { opacity: 0.2; }
+  46%, 84% { opacity: 0.95; }
+  96%, 100% { opacity: 0.2; }
+}
+[data-loop="diligence"][data-play="1"] .ansyra-loop-bar { opacity: 0.35; }
+[data-loop="diligence"][data-play="1"] .ansyra-loop-bar:nth-child(2),
+[data-loop="diligence"][data-play="1"] .ansyra-loop-bar:nth-child(5) {
+  animation: ansyra-loop-flag 5.6s ease-in-out infinite;
+  animation-delay: calc(var(--i) * 240ms);
+}
+
+/* 03 The decision record: written, challenged, answered. */
+.ansyra-loop-type {
+  display: block;
+  height: 7px;
+  width: 0;
+  border-radius: 3px;
+  background: var(--fg-2);
+  opacity: 0.6;
+}
+@keyframes ansyra-loop-write {
+  0%, 4% { width: 0; }
+  34%, 100% { width: 84%; }
+}
+[data-loop="decision"][data-play="1"] .ansyra-loop-type {
+  animation: ansyra-loop-write 6s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+.ansyra-loop-chip {
+  align-self: flex-start;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  opacity: 0;
+  border: 1px solid currentColor;
+}
+.ansyra-loop-chip--flag { color: var(--sev-flag-text); }
+.ansyra-loop-chip--ok { color: var(--sev-grounded-text); }
+@keyframes ansyra-loop-chip-in {
+  0%, 38% { opacity: 0; transform: translate3d(0, 5px, 0); }
+  48%, 74% { opacity: 1; transform: none; }
+  84%, 100% { opacity: 0; transform: translate3d(0, -5px, 0); }
+}
+@keyframes ansyra-loop-chip-in-late {
+  0%, 62% { opacity: 0; transform: translate3d(0, 5px, 0); }
+  72%, 94% { opacity: 1; transform: none; }
+  100% { opacity: 0; }
+}
+[data-loop="decision"][data-play="1"] .ansyra-loop-chip--flag {
+  animation: ansyra-loop-chip-in 6s ease-in-out infinite;
+}
+[data-loop="decision"][data-play="1"] .ansyra-loop-chip--ok {
+  animation: ansyra-loop-chip-in-late 6s ease-in-out infinite;
+}
+
+/* 04 Memory: a past deal surfaces behind the current one. */
+.ansyra-loop-stack { position: relative; height: 100%; }
+.ansyra-loop-card {
+  position: absolute;
+  inset: 12% 8%;
+  border-radius: 10px;
+  border: 1px solid var(--fg-rule);
+  background: color-mix(in srgb, var(--fg) 6%, transparent);
+  display: block;
+}
+.ansyra-loop-card--back { transform: translate3d(0, 0, 0) scale(0.94); opacity: 0; }
+.ansyra-loop-card--front { display: grid; place-items: center; }
+.ansyra-loop-score {
+  font-family: var(--font-display);
+  font-size: 30px;
+  color: var(--fg);
+  opacity: 0;
+}
+@keyframes ansyra-loop-surface {
+  0%, 10% { transform: translate3d(0, 14%, 0) scale(0.94); opacity: 0; }
+  34%, 78% { transform: translate3d(0, -13%, 0) scale(0.94); opacity: 0.7; }
+  92%, 100% { transform: translate3d(0, 14%, 0) scale(0.94); opacity: 0; }
+}
+@keyframes ansyra-loop-score-in {
+  0%, 40% { opacity: 0; }
+  56%, 80% { opacity: 1; }
+  92%, 100% { opacity: 0; }
+}
+[data-loop="memory"][data-play="1"] .ansyra-loop-card--back {
+  animation: ansyra-loop-surface 6.4s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+[data-loop="memory"][data-play="1"] .ansyra-loop-score {
+  animation: ansyra-loop-score-in 6.4s ease-in-out infinite;
+}
+
+/* At rest the loops hold a readable first frame rather than an empty box. */
+[data-play="0"] .ansyra-loop-type { width: 84%; }
+[data-play="0"] .ansyra-loop-chip--ok { opacity: 1; }
+[data-play="0"] .ansyra-loop-card--back { opacity: 0.7; transform: translate3d(0, -13%, 0) scale(0.94); }
+[data-play="0"] .ansyra-loop-score { opacity: 1; }
+[data-play="0"] .ansyra-loop-scan { opacity: 0.5; transform: translate3d(0, 340%, 0); }
+
+  html[data-motion="off"] .ansyra-loop * { animation: none !important; }
+
+
+/* ─── The opening ────────────────────────────────────────────────────────────
+   The hero's own content waits for the wordmark to clear, then arrives.
+
+   Done with a TRANSITION on always-rendered elements, never by withholding
+   them: the h1 is in the DOM and painted on the first frame, so it still counts
+   as the largest contentful paint. Only its opacity is held. Conditional
+   rendering here would push LCP out by the length of the intro, which is
+   exactly the cost this sequence is not allowed to have. */
+/* THE HERO IS NEVER HELD AT OPACITY 0. THIS IS AN LCP RULE, NOT A TASTE ONE.
+   It used to be: `[data-intro="running"] [data-intro-target] { opacity: 0 }`,
+   so the whole hero waited out the 640ms opening before it painted. A comment
+   above it claimed the element stayed mounted "so the browser can paint it as
+   the largest contentful paint" — but LCP explicitly ignores anything at
+   opacity 0, so the rule did the exact opposite of what it said.
+
+   Measured on the production build over Slow 4G + 4x CPU: FCP 2408ms, LCP
+   3140ms, LCP element `SPAN.ansyra-hero-line-clean`. The 732ms gap was the
+   opening animation, and nothing else.
+
+   The claim now resolves WHILE the wordmark travels rather than after it, which
+   is one opening instead of two consecutive ones, and costs LCP nothing. Only
+   the supporting content (lede, action, sources) still waits. */
+[data-intro-target] {
+  opacity: 1;
+}
+
+/* ─── The claim, resolving ───────────────────────────────────────────────────
+   Each line is uncovered top-down and rises 16px, then the degraded cut
+   crossfades to the clean one. Two gestures per line, 90ms apart, and the
+   second one is the concept: the display face degrades by dissolving into
+   halftone dots, so a line arriving in Redaction 50 and resolving to Redaction
+   is literally resolution loss recovering. That is why this typeface is worth
+   keeping, and until now the hero was the only display type on the site that
+   did not perform it.
+
+   `clip-path` and `transform` only in the hot path. The crossfade is opacity
+   on two spans sharing one box, because `font-family` is not animatable and
+   blurring text is banned outright. */
+.ansyra-hero-line {
+  display: block;
+  position: relative;
+  /* -18% at the bottom so descenders and the letter-spacing overhang are never
+     clipped at rest. An inset that stops at 0 shaves the tail of a 'y'. */
+  clip-path: inset(0 0 -18% 0);
+  transform: translate3d(0, 0, 0);
+  transition:
+    clip-path 460ms cubic-bezier(0.16, 1, 0.3, 1) calc(var(--i, 0) * 90ms),
+    transform 460ms cubic-bezier(0.16, 1, 0.3, 1) calc(var(--i, 0) * 90ms);
+}
+[data-claim="hold"] .ansyra-hero-line {
+  clip-path: inset(0 0 92% 0);
+  transform: translate3d(0, 16px, 0);
+}
+/* THE CROSSFADE IS INVERTED, AND THAT IS AN LCP DECISION.
+   The obvious construction is: clean copy starts at opacity 0, struck copy
+   fades out, clean fades in. It looks identical and it costs ~730ms of LCP,
+   because the clean span IS the largest contentful paint and LCP ignores
+   anything at opacity 0.
+   So the clean copy is opaque from the first frame and the STRUCK copy sits on
+   top of it and dissolves away. Same gesture, same 380ms, but the text the
+   browser measures has painted by then. Measured: LCP 3028ms -> see below. */
+.ansyra-hero-line-clean {
+  display: block;
+  opacity: 1;
+}
+.ansyra-hero-line-cut {
+  position: absolute;
+  inset: 0;
+  font-family: var(--font-struck);
+  opacity: 0;
+  transition: opacity 380ms cubic-bezier(0.16, 1, 0.3, 1) calc(var(--i, 0) * 90ms);
+  pointer-events: none;
+}
+[data-claim="hold"] .ansyra-hero-line-cut { opacity: 1; }
+
+/* Lede, action, sources. 12px of travel, well under the 24px chrome cap, and
+   each on the same 90ms beat the claim lines are on, so the hero is ONE
+   sequence rather than a headline animation plus three others. */
+[data-hero-item] {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  transition:
+    opacity 520ms cubic-bezier(0.16, 1, 0.3, 1) calc(var(--i, 0) * 90ms),
+    transform 520ms cubic-bezier(0.16, 1, 0.3, 1) calc(var(--i, 0) * 90ms);
+}
+[data-hero="hold"] [data-hero-item] {
+  opacity: 0;
+  transform: translate3d(0, 12px, 0);
+}
+
+/* Still: the same composition, arrived. No transitions, nothing held back. */
+html[data-motion="off"] .ansyra-hero-line,
+html[data-motion="off"] .ansyra-hero-line-cut,
+html[data-motion="off"] .ansyra-hero-line-clean,
+html[data-motion="off"] [data-hero-item] {
+  transition: none;
+}
+html[data-motion="off"] .ansyra-hero-line-cut { opacity: 0; }
+
+
+/* ─── The city ───────────────────────────────────────────────────────────────
+   Small buildings scattered in the field, with links drawn between them. The
+   product is about deals BETWEEN companies, so the background says so: nodes
+   and the lines connecting them, breathing in and out on long cycles.
+
+   Opacity only. No transform on the nodes, because the whole point is that
+   they stay put and the ATTENTION moves — a drifting skyline would fight the
+   orbs behind it and read as parallax clutter. Each element gets its own long
+   period and a negative delay, so the field is already mid-cycle on arrival
+   rather than starting from a synchronised black. */
+@keyframes ansyra-node-breathe {
+  0%, 100% { opacity: 0; }
+  18%, 62% { opacity: 1; }
+}
+/* Links fade on the same principle but reach a lower ceiling: a line between
+   two nodes is a relationship, and it must never out-read the things it joins. */
+@keyframes ansyra-link-breathe {
+  0%, 100% { opacity: 0; }
+  26%, 58% { opacity: 1; }
+}
+
+.ansyra-node,
+.ansyra-link {
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  animation-iteration-count: infinite;
+  opacity: 0;
+}
+.ansyra-node { animation-name: ansyra-node-breathe; }
+.ansyra-link { animation-name: ansyra-link-breathe; }
+
+/* At rest the city is PRESENT, not absent: the same composition, held at the
+   opacity the breathe cycle spends most of its time at. A reduced-motion
+   fallback that simply removed the layer would be a different page. */
+  html[data-motion="off"] .ansyra-node,
+html[data-motion="off"] .ansyra-link { animation: none; opacity: 0.7; }
+
+
+/* Belt and braces. The JS path (useMotionPref) already withholds these classes,
+   but the field must also come to rest for anyone the JS override never sees. */
+  html[data-motion="off"] .ansyra-orb,
+html[data-motion="off"] .ansyra-caustic-sheet { animation: none; }
+
+
+@keyframes ansyra-hero-drift {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(0, -50%, 0); }
+}
+.ansyra-hero-drift {
+  animation-name: ansyra-hero-drift;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform;
+}
+  html[data-motion="off"] .ansyra-hero-drift { animation: none; }
+
+
+/* ─── The ledger carousel controls ───────────────────────────────────────────
+   Real buttons at a real hit size. The dot is 8px of mark inside a 32px
+   target, for the same reason the view controls are 18px inside 44px: the
+   thing you can see and the thing you can hit are different sizes. */
+.ansyra-ledger-dot {
+  position: relative;
+  /* 44, matching the view controls and the nav. The mark stays 8px; the target
+     is negative-margined so a row of them still reads as a tight cluster
+     rather than as three big empty buttons. */
+  width: 44px;
+  height: 44px;
+  margin: -6px -6px;
+  border: 0;
+  background: none;
+  border-radius: 999px;
+}
+.ansyra-ledger-dot::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  border-radius: 999px;
+  background: var(--fg-2);
+  opacity: 0.45;
+  transition: opacity var(--t-shift) ease, background var(--t-shift) ease;
+}
+.ansyra-ledger-dot:hover::after { opacity: 0.8; }
+.ansyra-ledger-dot[data-on]::after { background: var(--caustic); opacity: 1; }
+.ansyra-ledger-dot:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: -6px;
+}
+
+.ansyra-ledger-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 1px solid var(--fg-rule);
+  background: none;
+  color: var(--fg-2);
+  transition: color var(--t-shift) ease, border-color var(--t-shift) ease;
+}
+.ansyra-ledger-arrow:hover { color: var(--fg); border-color: var(--fg); }
+.ansyra-ledger-arrow:focus-visible {
+  color: var(--fg);
+  outline: 2px solid var(--fg);
+  outline-offset: 2px;
+}
+
+/* ─── The movement loops at stage scale ──────────────────────────────────────
+   The loops were five bars in a column. At 148px that read as a diagram; at
+   ~380px, filling a card, it read as a loading skeleton. These are the
+   structures that make each loop read as the thing it depicts rather than as
+   placeholder rows. */
+.ansyra-loop--stage .ansyra-loop-cols {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr 0.8fr;
+  gap: clamp(14px, 1.6vw, 26px);
+  height: 58%;
+  align-content: start;
+}
+.ansyra-loop-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+.ansyra-loop-colhead {
+  font-family: var(--font-sans);
+  /* 12px, not the 10px this shipped with for one commit. The scale's floor is
+     12 and it is a floor, not a guideline: the retired 10px citation line is
+     the reason the rule exists. Tracking comes down to buy the width back. */
+  font-size: var(--step-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg-2);
+  opacity: 0.55;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* The three columns fill at different rates, so the sort reads as a sort. */
+[data-loop="origination"][data-play="1"] .ansyra-loop-col:nth-child(1) .ansyra-loop-bar {
+  animation: ansyra-loop-arrive 5.2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+[data-loop="origination"][data-play="1"] .ansyra-loop-col:nth-child(2) .ansyra-loop-bar {
+  animation: ansyra-loop-arrive 5.2s cubic-bezier(0.16, 1, 0.3, 1) 0.5s infinite;
+}
+[data-loop="origination"][data-play="1"] .ansyra-loop-col:nth-child(3) .ansyra-loop-bar {
+  animation: ansyra-loop-arrive 5.2s cubic-bezier(0.16, 1, 0.3, 1) 1s infinite;
+}
+
+.ansyra-loop--stage .ansyra-loop-chiprow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 4px;
+}
+.ansyra-loop--stage .ansyra-loop-filed {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--fg-rule);
+}
+
+/* The memory stack: four cards deep instead of two, so "your own history" has
+   some depth to it rather than being one card behind another. */
+.ansyra-loop--stage .ansyra-loop-card--back2,
+.ansyra-loop--stage .ansyra-loop-card--back3 {
+  position: absolute;
+  border-radius: var(--r-node);
+  border: 1px solid var(--fg-rule);
+  background: color-mix(in srgb, var(--fg) 4%, transparent);
+}
+.ansyra-loop--stage .ansyra-loop-card--back2 { inset: 14% 20% 22% 8%; opacity: 0.5; }
+.ansyra-loop--stage .ansyra-loop-card--back3 { inset: 20% 28% 30% 4%; opacity: 0.3; }
+.ansyra-loop--stage .ansyra-loop-cardrows {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-top: 14px;
+  width: 100%;
+}
+
+/* THE STAGE LOOPS NEVER GO FULLY INVISIBLE.
+   The arrival keyframes were written for a 148px figure, where a bar blinking
+   out for a fraction of a second reads as data moving. Filling a 600px card,
+   the same keyframe is a third of the composition disappearing, and the honest
+   description of that is "the card looks empty". At stage scale the bars keep
+   a floor: they still arrive, they just arrive from dim rather than from
+   nothing. Opacity and transform only, exactly as before. */
+@keyframes ansyra-loop-arrive-stage {
+  0%, 6% { transform: translate3d(-8%, 0, 0); opacity: 0.1; }
+  22%, 84% { transform: translate3d(0, 0, 0); opacity: 0.34; }
+  100% { transform: translate3d(0, 0, 0); opacity: 0.16; }
+}
+.ansyra-loop--stage .ansyra-loop-bar { opacity: 0.26; }
+[data-loop="origination"][data-play="1"] .ansyra-loop--stage .ansyra-loop-bar,
+.ansyra-loop--stage[data-loop] .ansyra-loop-col .ansyra-loop-bar { animation-name: ansyra-loop-arrive-stage; }
+.ansyra-loop--stage[data-play="1"] .ansyra-loop-col:nth-child(1) .ansyra-loop-bar {
+  animation: ansyra-loop-arrive-stage 5.2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+.ansyra-loop--stage[data-play="1"] .ansyra-loop-col:nth-child(2) .ansyra-loop-bar {
+  animation: ansyra-loop-arrive-stage 5.2s cubic-bezier(0.16, 1, 0.3, 1) 0.45s infinite;
+}
+.ansyra-loop--stage[data-play="1"] .ansyra-loop-col:nth-child(3) .ansyra-loop-bar {
+  animation: ansyra-loop-arrive-stage 5.2s cubic-bezier(0.16, 1, 0.3, 1) 0.9s infinite;
+}
+/* The document loop reads top-to-bottom, so its lines hold at full presence and
+   only the flagged pair pulses. A whole page of text blinking is not a scan. */
+.ansyra-loop--stage[data-loop="diligence"][data-play="1"] .ansyra-loop-bar { opacity: 0.3; }
+
+/* The hero citation row stacks left-aligned on small screens. Centring each
+   wrapped item independently gave three different left edges and a ragged
+   column that read as a mistake. */
+@media (max-width: 767px) {
+  [data-hero-item] .ansyra-sources { justify-content: flex-start; }
+  [data-hero-item] .ansyra-sources > li { width: 100%; max-width: none; }
+}
+
+/* BARS KEEP THEIR HEIGHT.
+   `.ansyra-loop-bar` sits in a flex column with a constrained height, and
+   flex items shrink by default. On the wide card the column was tall enough
+   that nothing shrank; in the 200px band on a stacked mobile card, ten bars
+   needing 282px were compressed to a computed height of ZERO and the whole
+   loop rendered as an empty rectangle. It looked like a missing asset and it
+   was a default nobody had opted into. */
+.ansyra-loop-bar { flex: 0 0 auto; }
+/* Short bands get a tighter rhythm so more of the document actually shows
+   before the container clips it. */
+@media (max-width: 899px) {
+  .ansyra-loop--stage .ansyra-loop-rows,
+  .ansyra-loop--stage .ansyra-loop-doc,
+  .ansyra-loop--stage .ansyra-loop-filed,
+  .ansyra-loop--stage .ansyra-loop-col { gap: 11px; }
+  .ansyra-loop--stage .ansyra-loop-bar { height: 9px; }
+  .ansyra-loop--stage { padding: 22px; }
+}
+
+/* ─── Loading shapes (Operate) ───────────────────────────────────────────────
+   Opacity only, and deliberately NOT a travelling shimmer: a sweep animates the
+   emptiest part of the screen, tells the reader nothing the dimming does not,
+   and runs a compositor pass on every panel at once while the app is already
+   busy fetching. This breathes.
+
+   Gated on `data-motion` like everything else, so **Still** reaches it. Under
+   Still the shape still renders — it is holding the layout open, which is its
+   real job — it simply sits at a fixed value. */
+@keyframes ansyra-skel-breathe {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.85; }
+}
+.ansyra-skel {
+  background: color-mix(in srgb, var(--fg) 9%, transparent);
+  opacity: 0.62;
+}
+html:not([data-motion="off"]) .ansyra-skel {
+  animation: ansyra-skel-breathe 1.6s ease-in-out infinite;
+}
+/* Children of one group breathe together rather than in a wave: a staggered
+   pulse across a panel reads as a progress indicator, which it is not — it
+   knows nothing about how far along the request is. */
+
+/* ─── The rail (Operate's second neutral layer) ──────────────────────────────
+   The sidebar, the content ground and the cards were THREE DIFFERENT ROLES
+   painted TWO colours: the rail and every card were both `--fg-surface`, and
+   the content ground was `--clear`. So a card floating in the working area was
+   the same value as the navigation holding it, and the app read as one flat
+   sheet with a line down it.
+
+   `--rail` is a recessed cut of the surface — the panel colour pushed a few
+   percent toward the ink. Operate calls for a second neutral under sidebars and
+   toolbars for exactly this reason: the working area has to read as the focus,
+   and it cannot if the chrome is the same weight.
+
+   ITS SECOND JOB — see `.ansyra-page-ground` below. The Refraction IV pass
+   applied this to the sidebar and stopped there, so the five standalone pages
+   (What's New, Help, Profile, Report a Bug, the legal shell) kept painting BOTH
+   their page ground and the card on it `--fg-surface`. On the dashboard a card
+   still reads, because the sidebar establishes depth and the panel carries a
+   border and `--elev-1`; on a full-bleed page with no chrome at all there is
+   nothing else to separate them, and the card vanished into the page. Measured
+   on /dashboard/whats-new before the fix: ground and card both
+   `color(srgb 0.144941 0.289255 0.296471)`, identical to six decimal places.
+
+   Reused rather than given its own token deliberately. There is ONE recessed
+   neutral in this system; a second one named for pages would have to be kept in
+   step with this one by hand, and the first theme change would separate them.
+
+   ── IT WAS MEASURED AGAINST THE WRONG NEIGHBOUR (fixed 2026-08-16) ──────────
+   The rail was cut from `--fg-surface`, the CARD colour. That is the surface it
+   does not touch. The sidebar's actual neighbour is `<main>`, which paints
+   `--clear`, and against that neighbour the original cut measured **1.009:1 on
+   dark** — the sidebar and the working area were the same value, separated only
+   by a 1px border.
+
+   So the Refraction IV pass swapped one collision for another. Its own note
+   said the rail, the content ground and the cards were "three roles painted two
+   colours"; moving the rail off the card colour fixed the pair it was compared
+   against and landed it on top of the pair it was not. Measured on the running
+   dashboard, before this change:
+
+       sidebar vs content ground   1.009   ← the collision
+       card    vs content ground   1.270   ← already fine, never broken
+       sidebar vs card             1.260   ← what IV was measuring
+
+   The rail is now cut from `--clear`, the ground it actually abuts, to roughly
+   the separation the card already had (~1.25). Recessed in both themes, so
+   "chrome sits below the sheet, panels sit above it" holds as one model rather
+   than two. */
+:root {
+  /* 12% ink over the ground: 1.260 against `--clear`, and `--fg` / `--fg-2`
+     still measure 10.22 / 5.72 on it. */
+  --rail: color-mix(in srgb, var(--fg) 12%, var(--clear));
+  --rail-rule: color-mix(in srgb, var(--fg) 12%, transparent);
+  --rail-hover: color-mix(in srgb, var(--fg) 7%, transparent);
+  /* THE ACCENT NEEDS A DARKER CUT ON A LIGHT RAIL.
+     `--caustic` is a light amber built for dark grounds, and the current-item
+     marker is a graphic that conveys state, so it owes 3:1 under WCAG 1.4.11 —
+     a rule that does not care that it is "only" a 3px bar.
+     RE-TUNED WITH THE RAIL. At 60% caustic this measured 3.78:1 against the old
+     light rail and only **2.77:1** against the new, darker one: deepening a
+     ground moves everything sitting on it, and a token tuned against the old
+     value fails silently. 50% measures 3.45:1 and still reads amber. */
+  --rail-accent: color-mix(in srgb, var(--caustic) 50%, var(--ink-next));
+}
+[data-theme="dark"] {
+  /* 30% black over the ground: 1.246 against `--clear`, matching what light
+     gets, with `--fg` / `--fg-2` at 13.56 / 11.93. The dark grounds sit close
+     together, so this needs a deeper mix than light to travel the same
+     perceptual distance. */
+  --rail: color-mix(in srgb, #000 30%, var(--clear));
+  --rail-rule: color-mix(in srgb, #fff 12%, transparent);
+  --rail-hover: color-mix(in srgb, #fff 8%, transparent);
+  /* On the dark rail the base accent measures 7.35:1 — deepening the rail only
+     helped here, which is why only the light cut moved. */
+  --rail-accent: var(--caustic);
+}
+
+/* ── THE OPERATE SURFACE'S OWN GROUND ────────────────────────────────────────
+   NEAR-NEUTRAL, AND THAT IS THE WHOLE CHANGE. Reported as "hurting my eyes",
+   and there were two measurable reasons rather than a matter of taste.
+
+   1. CHROMA AT SCALE. The ground was #a3c4c2 — chroma 33 (max channel minus
+      min) at mid luminance, filling the entire viewport. A saturated mid-tone
+      across that much area is the classic source of visual fatigue: the eye has
+      no neutral to return to. Everything here is now chroma 0-3.
+
+   2. TWO HUES FIGHTING. The card was `--float` (#f3f5fb), which is BLUE-tinted
+      — blue channel above red — sitting on a GREEN-tinted ground. Neither was
+      resting, and the pair read as a colour cast rather than as a surface and a
+      panel on it. One family now, a faint cool grey, top to bottom.
+
+   The lightness ladder is unchanged in ROLE — chrome recessed, ground, panels
+   raised — and it is now carried by lightness ALONE rather than by hue:
+
+       card    #ffffff   lum 1.000
+       ground  #ebedee   lum 0.844   card lifts 1.174
+       rail    #dadcdd   lum 0.713   ground lifts 1.172
+
+   Both separations were SOLVED against the 1.17 the surface-separation gate
+   wants, not eyeballed, because a neutral palette is exactly where a designer's
+   eye stops being able to judge a 1.1 from a 1.2.
+
+   THE THEME NOTE STILL STANDS: this scope makes Operate theme-independent, and
+   `parchment/Card` and DESIGN.md both carry "no surface overrides the ground the
+   reader picked". It is a deliberate exception, recorded next to the rule. */
+[data-surface="operate"] {
+  --dashboard-action: #0b3326;
+  --clear: #ebedee;
+  --ground-a: #ebedee;
+  --medium: #dfe2e2;
+  --ground-b: #dfe2e2;
+
+  --fg: #16201d;
+  /* One value across three surfaces, as before — card 7.40, ground 6.30,
+     rail 5.38. Grey rather than the green-black the teal ground needed. */
+  --fg-2: #4d5854;
+  --fg-rule: color-mix(in srgb, #16201d 14%, transparent);
+  --fg-surface: #ffffff;
+  --surface-b: #f7f8f8;
+  --fg-glass: rgba(255, 255, 255, 0.72);
+
+  --rail: #dadcdd;
+  --rail-rule: color-mix(in srgb, #16201d 14%, transparent);
+  --rail-hover: color-mix(in srgb, #16201d 6%, transparent);
+  /* 60%, and the direction of travel is the opposite of last time. On the teal
+     rail the amber had to go DARKER to separate; on a light neutral rail it has
+     to go darker still — 80% measures 2.19:1, 70% is 2.67, and 60% is the first
+     cut that clears the 3:1 a state graphic owes (3.28:1). The rail moved, so
+     this had to be re-solved rather than carried over. */
+  --rail-accent: color-mix(in srgb, var(--caustic) 60%, var(--ink-a));
+
+  /* The light-ground severity set, forced, so a dark-mode reader cannot get the
+     light-TEXT cuts on a white card. On white these measure 6.77 / 6.01 / 7.18. */
+  --sev-flag: #a8301b;
+  --sev-watch: #985017;
+  --sev-grounded: var(--dashboard-action);
+  --sev-flag-text: #a8301b;
+  --sev-watch-text: #985017;
+  --sev-grounded-text: var(--dashboard-action);
+}
+
+/* ── ONE WEIGHT STEP UP, ACROSS OPERATE ──────────────────────────────────────
+   Reported as the text looking weak — first in the sidebar, then "wherever".
+   It was not one component: the dashboard's small text is overwhelmingly
+   `font-sans text-[13px]` / `text-[12px]` with no weight set at all, which is
+   400, and 400 in a secondary grey at 12-13px is thin on a light ground.
+
+   500 IS THE CEILING, not a preference. General Sans ships exactly two files
+   here, 400 and 500 (`public/fonts/generalsans-{400,500}.woff2`). Asking for
+   600 would make the browser SYNTHESISE a bold by smearing the 500 outlines,
+   which is the single most obvious tell of a typeface used carelessly and is
+   the same defect this stylesheet already guards against for italics.
+
+   THE COST, STATED: the 18 `font-medium` elements in the dashboard were the one
+   step above body, and they are 500 too — so this flattens that distinction and
+   they now lean on size and colour alone. Buying it back means shipping a
+   600-weight file, which is a decision about payload, not a tweak.
+
+   `.ansyra-index` is listed separately because it sets its font-family in CSS
+   and never carries the `.font-sans` utility. `.ansyra-label` is deliberately
+   absent: it is already 500.
+
+   `[data-surface="page"]` is the four signed-in standalone pages — Profile,
+   Help, What's New, Report a Bug. They share `.ansyra-page-ground` with the
+   LEGAL shell, which is why the selector keys off an attribute rather than that
+   class: Terms and Privacy are long-form prose, and a whole legal document set
+   at 500 reads as shouting. The attribute carries no colour, only this weight —
+   the Operate ground block above is keyed to `operate` alone. */
+[data-surface="operate"] .font-sans,
+[data-surface="operate"] .ansyra-index,
+[data-surface="page"] .font-sans,
+[data-surface="page"] .ansyra-index {
+  font-weight: 500;
+}
+
+/* The ground for a standalone page — one that is all content and no chrome.
+   The card floating on it keeps `--fg-surface`, so the two layers are two
+   values instead of one. Text sitting DIRECTLY on this ground is `--fg`
+   (headings) and `--fg-2` (labels); both are gated against `--rail` in both
+   themes by scripts/contrast.mjs, which is why this reuses the rail rather than
+   inventing an ungated colour.
+
+   A class rather than five copies of the same inline style: the defect existed
+   in five places at once because the page shell was hand-copied five times, and
+   fixing the copies without removing the duplication just resets the clock. */
+.ansyra-page-ground {
+  background: var(--rail);
+}
+
+/* The current instrument. It used to be `background: var(--fg-surface)` on a
+   sidebar whose own background was ALSO `var(--fg-surface)` — the selected
+   state was literally the same colour as the thing it sat on, leaving a 1px
+   border and a 6% shadow to carry "you are here" on their own.
+
+   Accent for the current selection is sanctioned by the Operate colour rule
+   (primary actions, current selection, state indicators; never decoration), and
+   this is the one place in the dashboard it appears as a fill. */
+.ansyra-rail-item {
+  position: relative;
+  color: var(--fg-2);
+  border: 1px solid transparent;
+  transition:
+    background var(--t-touch) ease,
+    color var(--t-touch) ease,
+    border-color var(--t-touch) ease;
+}
+.ansyra-rail-item:hover { background: var(--rail-hover); color: var(--fg); }
+.ansyra-rail-item:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: -2px;
+  color: var(--fg);
+}
+.ansyra-rail-item[aria-current="page"] {
+  background: var(--sev-grounded);
+  border-color: var(--sev-grounded);
+  color: #fff;
+  font-weight: 500;
+}
+.ansyra-rail-item[aria-current="page"] svg { color: #fff; stroke: currentColor; }
+.ansyra-rail-item[aria-current="page"]::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 25%;
+  height: 50%;
+  width: 3px;
+  border-radius: 999px;
+  background: #fff;
+}
+html[data-motion="off"] .ansyra-rail-item { transition: none; }
+
+/* ─── Instrument crossfade ───────────────────────────────────────────────────
+   120ms, opacity only. Long enough to register that the surface changed, far
+   below anything that makes someone wait. Operate: "product loads into a task;
+   users don't want to watch it load." */
+@keyframes ansyra-tab-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+html:not([data-motion="off"]) .ansyra-tab-panel {
+  animation: ansyra-tab-in var(--t-touch) ease-out both;
+}
+
+/* ─── The gate: the dashboard's one authored moment ──────────────────────────
+   DESIGN.md bans set pieces on Operate surfaces, and that rule stands. This is
+   not one. A set piece is a composition the reader is invited to watch; this is
+   a STATE CHANGE reporting itself, and it is the most consequential one the
+   product has — the moment a deal becomes movable, which is the thing the whole
+   landing page argues for.
+
+   So it gets exactly one gesture: the mark and the line settle into their new
+   value over --t-shift. It fires when the state changes, it does not loop, it
+   does not pulse, and nothing else on this surface is permitted anything like
+   it. Transitions only — no keyframes, so there is nothing to run when the
+   state is stable. */
+.ansyra-gate-mark {
+  width: 3px;
+  height: 34px;
+  border-radius: 999px;
+  /* `background-color`, NOT the `background` shorthand.
+     Transitioning the shorthand looked identical and was quietly broken: when
+     the theme flips, `--sev-flag-text` changes value, and a transition declared
+     on the shorthand does not re-resolve the var — Chrome latched the previous
+     theme's colour. Measured: after switching to light the mark stayed
+     #ff9385 (the DARK cut) at 1.97:1 on the light card, under a 3:1 floor,
+     while the token itself correctly read #a8301b at 6.21:1.
+     The longhand is the only animatable part of that shorthand anyway. */
+  transition: background-color var(--t-shift) cubic-bezier(0.16, 1, 0.3, 1);
+}
+.ansyra-gate-line {
+  transition: color var(--t-shift) cubic-bezier(0.16, 1, 0.3, 1);
+}
+html[data-motion="off"] .ansyra-gate-mark,
+html[data-motion="off"] .ansyra-gate-line {
+  transition: none;
+}
+
+/* ─── "The assistant is thinking" ────────────────────────────────────────────
+   Three dots, breathing. This conveys STATE — a response is being generated —
+   so it earns its motion under the Operate rules, unlike decoration.
+
+   It replaces Tailwind's bounce utility, for two reasons. The first is taste:
+   a spring-bounced dot is the generic tell, and real things decelerate rather
+   than rebound. The second matters more — that utility ships its own keyframe
+   and answers to nothing, so those dots kept moving under **Still**. Every
+   other piece of motion in this app reads `data-motion`; this one silently
+   did not.
+
+   Under Still the dots hold at a visible resting opacity. The state still reads
+   (three dots present means "working"), it just does not move. */
+@keyframes ansyra-think {
+  0%, 80%, 100% { opacity: 0.28; }
+  40% { opacity: 1; }
+}
+.ansyra-think-dot { opacity: 0.55; }
+html:not([data-motion="off"]) .ansyra-think-dot {
+  animation: ansyra-think 1.25s ease-in-out infinite;
+}
+
+/* ─── Spin, under the same authority ─────────────────────────────────────────
+   The last two Tailwind `animate-spin` utilities on live surfaces — the auth
+   loading screen and the toast's loading icon — had exactly the defect the
+   thinking dots had above: a utility that ships its own keyframe and answers to
+   nothing, so both kept turning under **Still** while every other moving thing
+   on the page stopped. (The other three `animate-*` utilities in `src` sit in
+   unreferenced shadcn files — `ui/skeleton`, `ui/spinner`, `ui/sidebar` — so
+   they are not surfaces and are left alone rather than edited blind.)
+
+   A frozen spinner is NOT the right Still treatment on its own: a ring stopped
+   mid-turn is the universal look of a hung app, which is the opposite of the
+   state it is reporting. Both call sites therefore carry the state in something
+   that does not move — "Loading Ansyra…" beside the ring, and the toast's own
+   text beside the icon — and the ring degrades to a static mark rather than
+   pretending to be the whole message. */
+@keyframes ansyra-spin {
+  to { transform: rotate(360deg); }
+}
+html:not([data-motion="off"]) .ansyra-spin {
+  animation: ansyra-spin 900ms linear infinite;
+}
+/* Deal dossiers use native disclosure so the same information architecture
+   works for every permission set and remains fully printable. */
+.ansyra-dossier-chapter[open] .ansyra-dossier-chevron { transform: rotate(180deg); }
+@media print {
+  .ansyra-dossier-chapter:not([open]) > :not(summary) { display: block !important; }
+  .ansyra-dossier-chapter > summary { display: flex !important; pointer-events: none; }
+  .ansyra-dossier-chevron { display: none !important; }
+}
+
+@keyframes ansyra-ledger-flow { from { transform: translateX(0); } to { transform: translateX(var(--ledger-distance)); } }
+.ansyra-ledger-track { animation: ansyra-ledger-flow var(--ledger-duration) linear infinite; }
+.ansyra-ledger-carousel:hover .ansyra-ledger-track,
+.ansyra-ledger-carousel:focus-within .ansyra-ledger-track { animation-play-state: paused !important; }
+
+/* A framed visual exhibit: the photograph stays intact inside the moving mount. */
+.clarity-exhibit { position: relative; margin: 4rem auto 5rem; padding: clamp(1rem, 3vw, 3rem); isolation: isolate; }
+.clarity-exhibit__surround { position: absolute; inset: 0; border: 1px solid var(--fg-rule); pointer-events: none; z-index: -1; }
+.clarity-exhibit__surround::after { content: ""; position: absolute; inset: 22px; border: 1px solid var(--fg-rule); transform: rotate(-1.5deg); }
+.clarity-exhibit__heading { display: flex; justify-content: space-between; gap: 1rem; color: var(--fg-2); font-family: var(--font-sans); font-size: 0.875rem; }
+.clarity-exhibit__stage { min-height: min(65svh, 680px); display: grid; align-items: center; perspective: 1400px; padding: 3rem 0; }
+.clarity-exhibit__mount { position: relative; width: 92%; max-width: 1040px; margin: auto; }
+.clarity-exhibit__image { position: relative; overflow: hidden; box-shadow: 0 24px 48px rgb(0 0 0 / 0.18); }
+.clarity-exhibit__image img { display: block; width: 100%; height: auto; }
+.clarity-exhibit__image .clarity-exhibit__seam { position: absolute; inset: 0; width: 100%; height: 100%; mask-image: linear-gradient(to right, transparent 46%, black 49%, black 51%, transparent 55%); }
+.clarity-exhibit__corner { position: absolute; width: 34px; height: 34px; border-color: var(--fg); pointer-events: none; }
+.clarity-exhibit__corner--tl { top: -12px; left: -12px; border-top: 1px solid; border-left: 1px solid; }
+.clarity-exhibit__corner--br { right: -12px; bottom: -12px; border-right: 1px solid; border-bottom: 1px solid; }
+.clarity-exhibit__caption { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; color: var(--fg-2); }
+.clarity-exhibit__caption p:first-child { font-family: var(--font-display); font-size: clamp(1.3rem, 2.5vw, 2rem); color: var(--fg); }
+.clarity-exhibit__caption p:last-child { font-family: var(--font-sans); font-size: 0.8125rem; line-height: 1.65; max-width: 48ch; }
+.clarity-exhibit__rail { margin-top: 1.75rem; height: 1px; background: var(--fg-rule); }
+.clarity-exhibit__rail span { display: block; width: 100%; height: 100%; background: var(--fg); transform-origin: left; }
+.ledger-introduction { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); align-items: start; gap: clamp(1.5rem, 4vw, 4rem); }
+.ledger-introduction__note { border-top: 1px solid var(--fg-rule); padding-top: 1rem; color: var(--fg-2); font-family: var(--font-sans); font-size: 0.8125rem; line-height: 1.7; }
+.closing-lines { width: 100%; }
+.closing-lines__line { display: block; width: 100%; padding: 0.45rem 0; text-align: left; color: var(--fg); font-family: var(--font-sans); font-size: clamp(0.875rem, 1.5vw, 1.125rem); line-height: 1.65; }
+.closing-lines__line span { display: block; opacity: 0.28; filter: blur(4px); transition: filter 350ms ease, opacity 350ms ease, color 350ms ease; }
+.closing-lines__line[data-active="true"] span { opacity: 1; filter: blur(0); color: var(--sev-grounded); }
+.closing-lines__line:focus-visible { outline: 1px solid var(--fg); outline-offset: 4px; }
+.closing-lines__controls { display: flex; justify-content: space-between; gap: 1rem; margin-top: 1rem; color: var(--fg-2); font-family: var(--font-sans); font-size: 0.75rem; }
+.closing-lines__controls button { text-decoration: underline; text-underline-offset: 4px; min-width: 44px; min-height: 44px; margin-top: -0.75rem; }
+html[data-motion="off"] .closing-lines__line span { transition: none; }
+@media (prefers-reduced-motion: reduce) { .closing-lines__line span { transition: none; } }
+@media (max-width: 640px) {
+  .clarity-exhibit { margin-top: 2.5rem; margin-bottom: 3rem; }
+  .clarity-exhibit__heading { font-size: 0.6875rem; }
+  .clarity-exhibit__stage { min-height: 0; padding: 2.5rem 0; }
+  .clarity-exhibit__mount { width: 96%; }
+  .clarity-exhibit__surround::after { inset: 10px; }
+  .clarity-exhibit__caption { grid-template-columns: 1fr; gap: 0.75rem; }
+  .ledger-introduction { grid-template-columns: 1fr; gap: 1.25rem; }
+}
+
+/* Light controls on the light workspace, independent of the landing theme. */
+[data-surface="operate"] { color-scheme: light; }
+[data-surface="operate"] input:is([type="checkbox"], [type="radio"]) {
+  appearance: none;
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  vertical-align: middle;
+  border: 1.5px solid var(--sev-grounded);
+  border-radius: 3px;
+  background: #fff;
+  display: inline-grid;
+  place-content: center;
+}
+[data-surface="operate"] input[type="radio"] { border-radius: 50%; }
+[data-surface="operate"] input[type="checkbox"]:checked::after {
+  content: "";
+  width: 8px;
+  height: 5px;
+  border-left: 2px solid var(--sev-grounded);
+  border-bottom: 2px solid var(--sev-grounded);
+  transform: translateY(-1px) rotate(-45deg);
+}
+[data-surface="operate"] input[type="radio"]:checked::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--sev-grounded);
+}
+[data-surface="operate"] input:is([type="checkbox"], [type="radio"]):focus-visible {
+  outline: 2px solid var(--sev-grounded);
+  outline-offset: 3px;
+}
+[data-surface="operate"] input:is([type="checkbox"], [type="radio"]):disabled { opacity: 0.5; }
+.ansyra-field[data-required="true"] > label::after,
+.ansyra-field:has(:required) > label::after,
+label:has(:required)::after {
+  content: " *";
+  color: var(--sev-grounded-text);
+  font-weight: 500;
+}
+
+.ansyra-field .ansyra-required-note { display: none; }
+.ansyra-field[data-required="true"] > label .ansyra-required-note,
+.ansyra-field:has(:required) > label .ansyra-required-note { display: inline; }
+
+/* Dossier content must fit both narrow panes and full-width workspaces. */
+.dossier-content { overflow-wrap: anywhere; }
+.dossier-content .ansyra-alive { min-width: 0; }
+.dossier-actions > button { min-height: 44px; }
+@media (max-width: 419px) {
+  .dossier-content .ansyra-alive { padding: 1rem; }
+  .dossier-actions > button { flex: 1 1 auto; }
+  .dossier-content input, .dossier-content select, .dossier-content textarea { max-width: 100%; }
+}
+
+/* Dashboard controls share the forest accent, including pointer/keyboard states. */
+[data-surface="operate"] .ansyra-cta--ghost:is(:hover, :focus-visible) {
+  background: var(--dashboard-action);
+  border-color: var(--dashboard-action);
+  color: #fff;
+}
+[data-surface="operate"] select:focus-visible {
+  outline: 2px solid var(--dashboard-action);
+  outline-offset: 3px;
+}

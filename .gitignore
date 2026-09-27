@@ -1,0 +1,80 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+# Environment variables
+.env
+.env.local
+.env.*.local
+# Database
+*.db
+*.sqlite
+*.sqlite3
+db/migrations/*.sql
+# TypeScript cache
+*.tsbuildinfo
+# Build outputs
+dist/
+build/
+# Test coverage
+coverage/
+.nyc_output/
+.env.*
+*.env
+credentials.json
+*.pem
+*.key
+.credentials
+playwright-report/
+test-results/
+.playwright/
+tests/e2e/.auth/
+# Generated passwords for the seeded test accounts — never commit
+.env.seed.local
+
+# ...but the TEMPLATE must ship. The `.env.*` rule above swallows it, so a fresh
+# clone had no record of which variables the app needs. Negation must come after
+# the pattern that excluded it.
+!.env.example
+
+# Local session notes — never commit (names where credentials live)
+CLAUDE.md
+
+# Local agent/editor tooling — launch configs and session scratch. Not part of
+# the product, and this repository is intended to be published.
+.claude/
+
+# Private operational exports and account inventories
+*.p12
+*.pfx
+*.sql.gz
+*.dump
+accounts.csv
+usernames.txt
+passwords.txt
+secrets.json
+
+# Historical operational evidence stays local, outside publishable source.
+docs/release-evidence/
+docs/production-issues-results.md
+docs/portfolio-deployment-walkthrough.md

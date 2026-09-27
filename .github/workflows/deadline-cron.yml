@@ -1,0 +1,32 @@
+name: Deadline reminders
+
+on:
+  schedule:
+    - cron: "15 4 * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  sweep:
+    # A source mirror must not run production cron without explicit setup.
+    if: github.repository == 'priyanshu0210/AnsyraV7' || vars.ENABLE_DEADLINE_CRON == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger the idempotent deadline sweep
+        env:
+          CRON_URL: ${{ secrets.ANSYRA_CRON_URL }}
+          CRON_SECRET: ${{ secrets.ANSYRA_CRON_SECRET }}
+        run: |
+          # Fail, do not skip: a silently skipped sweep means no deadline
+          # reminders and no rate-limit/chat pruning, with nothing to notice.
+          if [ -z "${CRON_URL}" ] || [ -z "${CRON_SECRET}" ]; then
+            echo "::error::ANSYRA_CRON_URL and ANSYRA_CRON_SECRET must be set as repository secrets (copy CRON_SECRET from the host)."
+            exit 1
+          fi
+          curl --fail --silent --show-error \
+            --retry 3 \
+            --max-time 120 \
+            -X POST \
+            -H "Authorization: Bearer ${CRON_SECRET}" \
+            "${CRON_URL}/internal/cron/deadlines"

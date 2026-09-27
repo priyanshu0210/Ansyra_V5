@@ -1,0 +1,37 @@
+name: CodeQL
+
+on:
+  push:
+    branches: [main, "release/**"]
+  pull_request:
+  schedule:
+    - cron: "23 3 * * 1"
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  analyze:
+    # Code scanning is free on PUBLIC repositories; on a private one it needs
+    # GitHub Advanced Security. Without either, `codeql-action/analyze` cannot
+    # upload its results and fails with "Resource not accessible by
+    # integration" — on every push, every pull request, for ever.
+    #
+    # That is not a neutral annoyance here. `render.yaml` deploys on
+    # `autoDeployTrigger: checksPass`, so one permanently-red check means the
+    # service never auto-deploys at all. The analysis itself never ran, so
+    # nothing is lost by skipping it in the environment where it cannot work.
+    #
+    # This guard keeps the tool in place and switches it on by itself the day
+    # the repository becomes public. To run it on a PRIVATE repository, enable
+    # GitHub Advanced Security, then set the repository variable
+    # ENABLE_CODEQL=true (Settings → Secrets and variables → Actions → Variables).
+    if: github.event.repository.visibility == 'public' || vars.ENABLE_CODEQL == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: github/codeql-action/init@v3
+        with:
+          languages: javascript-typescript
+      - uses: github/codeql-action/analyze@v3

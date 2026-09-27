@@ -1,0 +1,23 @@
+node_modules
+dist
+.git
+*.swp
+*.log
+
+# Never let a local environment file into the build context. The runtime image
+# copies only dist/, node_modules/ and package.json, so a stray .env would not
+# reach the published layers — but it WOULD be readable in the builder stage,
+# and Vite inlines every VITE_* value it can see at build time into the client
+# bundle. Configuration belongs in the platform's environment, not the image.
+.env
+.env.*
+.env.seed.local
+# Private local recovery material and other Git-ignored local artifacts.
+*.local
+
+# Test output and local session notes — never part of a build.
+playwright-report
+test-results
+.playwright
+tests/e2e/.auth
+CLAUDE.md

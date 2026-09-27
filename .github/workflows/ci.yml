@@ -1,0 +1,46 @@
+# Ansyra CI (Phase 11.5) — typecheck, lint, unit tests, and production build on
+# every push/PR. No DB or AI keys needed: tests are pure-unit and the build is
+# static.
+#
+# Lint runs with --max-warnings 0 (see package.json). The repo reached a clean
+# baseline deliberately, and warnings are how that baseline erodes: the whole
+# reason 31 errors accumulated unnoticed is that nothing here ever ran eslint.
+# It sits after `check` and before `test` so a formatting-class failure reports
+# before the slower jobs.
+name: CI
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches: [main, "release/**"]
+  pull_request:
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run check:publication
+      - run: npm run check
+      - run: npm run lint
+      - run: npm test
+      - run: npm run audit:prod
+      - run: npm run audit:all
+      - run: npm run build
+
+  container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build --tag ansyra:${{ github.sha }} .

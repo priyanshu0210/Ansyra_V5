@@ -1,0 +1,57 @@
+# Personal portfolio using fictional data and real AI calls.
+# Outbound email is deferred for the initial owner-managed demo.
+# Select this Blueprint path explicitly; render.yaml remains the real-data service.
+# Review the sample workspace and provider terms before configuring credentials.
+services:
+  - type: web
+    name: ansyra-portfolio
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    autoDeployTrigger: "off"
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: APP_MODE
+        value: demo
+      - key: PORTFOLIO_DEMO
+        value: "true"
+      - key: AI_PROVIDER
+        value: gemini
+      - key: AI_MODEL
+        sync: false
+      - key: AI_RESEARCH_MODEL
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      # Later: add RESEND_API_KEY and EMAIL_FROM for app notifications.
+      # Configure Supabase SMTP separately for invitations/password-reset mail.
+      - key: DATABASE_SSL
+        value: "true"
+      - key: TRUST_PROXY_HEADERS
+        value: "true"
+      - key: PROXY_IP_HEADER
+        value: x-forwarded-for
+      - key: TRUSTED_PROXY_HOPS
+        value: "1"
+      # SITE_URL is optional on Render: the assigned RENDER_EXTERNAL_URL is used.
+      # Set SITE_URL explicitly later if configuring a custom domain.
+      - key: DATABASE_URL
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: CRON_SECRET
+        generateValue: true
+      - key: LEGAL_REVIEW_COMPLETE
+        value: "false"
+      - key: AI_DATA_PROCESSING_APPROVED
+        # Existing live-AI acknowledgement, including when APP_MODE=demo.
+        sync: false
+      - key: BACKUP_RESTORE_TESTED
+        # Isolated database + Storage API recovery drill completed 2026-09-15.
+        value: "true"

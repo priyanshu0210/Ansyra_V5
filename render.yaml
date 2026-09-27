@@ -1,0 +1,67 @@
+# Render blueprint for the REAL-DATA service.
+#
+# APP_MODE=production is deliberate: it makes the boot gates real. The service
+# refuses to start until every `sync: false` value below is supplied and the
+# three `*_APPROVED/_TESTED/_COMPLETE` acknowledgements are genuinely true.
+# A demo instance with synthetic data can run a second service with
+# APP_MODE=demo; do not point real users at one.
+services:
+  - type: web
+    name: ansyra
+    runtime: docker
+    plan: starter
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: APP_MODE
+        value: production
+      - key: TRUST_PROXY_HEADERS
+        value: "true"
+      # Render appends the client address to X-Forwarded-For; the last entry
+      # is the one to trust (api/lib/rate-limit.ts).
+      - key: PROXY_IP_HEADER
+        value: x-forwarded-for
+      - key: TRUSTED_PROXY_HOPS
+        value: "1"
+      - key: DATABASE_SSL
+        value: "true"
+      - key: SITE_URL
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      # Copy this generated value into the GitHub secret ANSYRA_CRON_SECRET, or
+      # the deadline workflow fails (deliberately) instead of running.
+      - key: CRON_SECRET
+        generateValue: true
+      - key: AI_PROVIDER
+        sync: false
+      - key: AI_MODEL
+        sync: false
+      - key: AI_RESEARCH_MODEL
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: EMAIL_FROM
+        sync: false
+      - key: SENTRY_DSN
+        sync: false
+      # Set to "true" only when each statement is actually true. See .env.example.
+      - key: LEGAL_REVIEW_COMPLETE
+        sync: false
+      - key: BACKUP_RESTORE_TESTED
+        sync: false
+      - key: AI_DATA_PROCESSING_APPROVED
+        sync: false

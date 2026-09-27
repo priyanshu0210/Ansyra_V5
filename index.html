@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Ansyra · The decision record for M&A</title>
+    <meta
+      name="description"
+      content="Ansyra keeps the M&A decision record: what was assumed, by whom, when, and whether it held. Grounded in your own deal history and citable when your IC pushes back."
+    />
+    <link rel="canonical" href="https://ansyra.com/" />
+
+    <!-- C3. Social preview. The site shipped with none, so every share of a
+         portfolio piece rendered as a bare grey link. The card is the hero
+         itself: the claim, set the way the page sets it. No screenshot, no
+         device mockup, no logo on a gradient.
+         The claim appears in FOUR places — landing/Hero.tsx, the two
+         descriptions below, og:image:alt, and scripts/og-card.html. They move
+         together or the share card starts quoting a page that no longer says
+         it, which is exactly what happened on 2026-08-13. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Ansyra" />
+    <meta property="og:url" content="https://ansyra.com/" />
+    <meta property="og:title" content="Ansyra · The decision record for M&A" />
+    <meta
+      property="og:description"
+      content="The deal closes. The decision record shouldn't. Ansyra keeps what was assumed, by whom, and whether it held. Citable when your IC pushes back."
+    />
+    <meta property="og:image" content="/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Ansyra. The deal closes. The decision record shouldn't." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Ansyra · The decision record for M&A" />
+    <meta
+      name="twitter:description"
+      content="The deal closes. The decision record shouldn't. What was assumed, by whom, and whether it held."
+    />
+    <meta name="twitter:image" content="/og.png" />
+    <meta name="theme-color" content="#123a3c" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=green" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=green" sizes="16x16 32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=green" />
+    <!-- Self-hosted type. No third-party font request: the Google Fonts
+         stylesheet was render-blocking on a cross-origin host and cost an
+         extra DNS + TLS round trip before first paint.
+
+         Two preloads, not three: the display face and the reading face are
+         both above the fold on first paint. Redaction 50 is NOT preloaded —
+         it renders the unresolved state, which by definition nobody is meant
+         to read, and it swaps in before the reveal needs it. -->
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/bespokeslab-400.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/generalsans-400.woff2" crossorigin />
+    <style>
+      /* Must match the DARK default (--ground-a / --ink-a under
+         [data-theme="dark"]), or the frame before index.css arrives paints a
+         light ground on a dark-default site — a white flash on every cold load. */
+      html,
+      body {
+        background-color: #123a3c;
+        color: #eaf2f1;
+      }
+    </style>
+    <!-- Theme, applied before first paint.
+         This has to run here rather than in React: setting `data-theme` after
+         hydration means the first frame paints in the wrong palette and the
+         page visibly flips. Kept tiny and dependency-free on purpose; the
+         storage key matches src/hooks/useTheme.ts. -->
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem("ansyra:theme");
+          // Dark unless the visitor has chosen otherwise. Must match
+          // initialTheme() in src/hooks/useTheme.ts or the first frame flips.
+          if (t !== "light" && t !== "dark") t = "dark";
+          document.documentElement.setAttribute("data-theme", t);
+        } catch (e) {
+          document.documentElement.setAttribute("data-theme", "dark");
+        }
+
+
+        // The opening has to be armed BEFORE first paint, for the same reason
+        // the theme does. Setting `data-intro` from a React effect runs after
+        // the hero has already painted, so the hero faded OUT and back IN —
+        // a flash of the thing the sequence is supposed to introduce.
+        try {
+          // MOTION IS ON BY DEFAULT FOR EVERYONE, and deliberately does NOT
+          // consult prefers-reduced-motion. That is a product decision taken
+          // explicitly, not an oversight: the page's identity is its motion,
+          // and the "Still" control is one click away in the nav. The still
+          // compositions are all still built and still correct — they are
+          // reached by choosing Still, not by an OS setting.
+          // Must match resolve() in src/hooks/useMotionPref.ts.
+          var override = localStorage.getItem("ansyra:motion");
+          var q = location.search;
+          if (q.indexOf("motion=on") > -1) override = "on";
+          else if (q.indexOf("motion=off") > -1) override = "off";
+          var play = override !== "off";
+          // `data-motion` is what the CSS tier reads. It exists because the
+          // stylesheet no longer keys off `prefers-reduced-motion` at all: if
+          // it still did, an OS-reduce visitor would get a page where the
+          // framer-driven set pieces move and the CSS-driven ambience does
+          // not, which is worse than either state.
+          document.documentElement.setAttribute("data-motion", play ? "on" : "off");
+          // Only on the landing. Every other route renders immediately.
+          if (play && location.pathname === "/") {
+            document.documentElement.setAttribute("data-intro", "running");
+            // FAILSAFE. If the bundle never boots, or HeroIntro throws, the
+            // hero must not stay hidden. Nothing here depends on React.
+            setTimeout(function () {
+              if (document.documentElement.getAttribute("data-intro") === "running") {
+                document.documentElement.setAttribute("data-intro", "done");
+              }
+            }, 2000);
+          }
+        } catch (e) {
+          document.documentElement.setAttribute("data-intro", "done");
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

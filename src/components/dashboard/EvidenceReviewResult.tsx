@@ -1,0 +1,9 @@
+import { Card } from "./parchment/Card";
+export function EvidenceReviewResult({ heading, date, result, onDelete }: { heading: string; date: Date | string; result: Record<string, unknown>; onDelete: () => void }) {
+  const current = result.reviewKind === "questions";
+  const strings = (value: unknown) => Array.isArray(value) ? value.filter((x): x is string => typeof x === "string") : [];
+  return <Card><div className="flex items-start justify-between gap-4"><div><h3 className="font-serif text-xl" style={{ color: "var(--fg)" }}>{heading}</h3><p className="mt-1 font-sans text-xs" style={{ color: "var(--fg-2)" }}>{new Date(date).toLocaleDateString()} · {current ? "Diligence questions, not an assessed score" : "Legacy analysis · unverified; regenerate before relying on it"}</p></div><button onClick={onDelete} className="min-h-11 font-sans text-xs underline" style={{ color: "var(--fg-2)" }}>Remove</button></div>
+  <p className="mt-4 font-sans text-sm leading-relaxed" style={{ color: "var(--fg-2)" }}>{typeof result.summary === "string" ? result.summary : "No summary recorded."}</p>
+  {current && <><details className="mt-4 font-sans text-sm" style={{ color: "var(--fg-2)" }}><summary>Context supplied to this review</summary><p className="mt-2 whitespace-pre-wrap">{String(result.suppliedContext || "No source context supplied. Company names alone do not establish facts.")}</p></details>{[["Questions to investigate", strings(result.questions)], ["Evidence still needed", strings(result.missingEvidence)]] .map(([title, items]) => <section key={String(title)} className="mt-5 border-t pt-4" style={{ borderColor: "var(--fg-rule)" }}><h4 className="font-serif text-lg" style={{ color: "var(--fg)" }}>{String(title)}</h4><ul className="mt-2 list-disc space-y-2 pl-5 font-sans text-sm leading-relaxed" style={{ color: "var(--fg-2)" }}>{(items as string[]).map((item) => <li key={item}>{item}</li>)}</ul></section>)}</>}
+  </Card>;
+}

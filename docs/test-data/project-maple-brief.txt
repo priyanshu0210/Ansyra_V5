@@ -1,0 +1,56 @@
+PROJECT MAPLE — FICTIONAL DEPLOYMENT TEST
+Version: 1.0 | As of: 16 September 2026
+All companies, people, contracts and figures below are invented for software testing. They are not facts about any real business. Amounts are USD millions unless stated otherwise.
+
+TRANSACTION
+Buyer: Cedarbridge Capital (fictional).
+Target: MapleWorks Software Ltd (fictional), a UK-based B2B workflow software vendor.
+Proposed acquisition: 100% of shares.
+Enterprise value: 24.0, cash-free/debt-free, subject to normalized working capital.
+Cash: 1.2. Debt: 4.5. Implied equity value before other adjustments: 20.7.
+Funding plan for enterprise value: buyer equity 14.0 and acquisition debt 10.0.
+Assumed closing date: 15 December 2026; this is a planning date, not an executed commitment.
+
+FINANCIALS — management-reported, unaudited
+FY2023 revenue: 8.0; EBITDA: 1.2.
+FY2024 revenue: 10.0; EBITDA: 1.6.
+FY2025 revenue: 12.5; EBITDA: 2.0.
+FY2026 management forecast: revenue 15.0; EBITDA 3.0.
+FY2025 recurring subscription revenue: 10.0; implementation revenue: 2.5.
+FY2025 operating cash flow: 1.4; capital expenditure: 0.4.
+December 2025 ARR: 10.8; gross revenue retention: 89%; net revenue retention: 106%.
+Management requests a 0.4 EBITDA add-back for a product migration project. No invoices or independent review have been supplied. Do not treat the add-back as verified.
+
+COMMERCIAL
+120 customers and 85 employees.
+Largest customer, fictional Harbor Retail, represents 28% of FY2025 revenue.
+Top five customers represent 52% of FY2025 revenue.
+Harbor Retail's contract expires 31 March 2027, around 3.5 months after planned closing. Renewal discussions are verbal only; no signed renewal is provided.
+A sales summary says 'all major customers are secured through 2028'. This conflicts with the contract schedule above and must be resolved.
+Sales pipeline: 5.0 unweighted opportunities. Management assumes a 60% win rate; the historical win rate was 32%. No signed orders support the forecast increase.
+
+TECHNOLOGY AND PEOPLE
+Product runs on a single cloud provider. No recent disaster-recovery test evidence was supplied.
+Two senior engineers maintain the billing integration; neither has signed a retention agreement.
+Founder plans to leave six months after closing. A successor has not been appointed.
+A security assessment identified an unresolved high-severity dependency issue. No independent penetration test or remediation evidence is included.
+
+LEGAL / COMMERCIAL TERMS — preliminary, not signed
+Exclusivity: proposed 45 days from signing a letter of intent.
+Target working capital: 1.0; definition and seasonal adjustment remain unagreed.
+Escrow: proposed 10% of equity consideration for 18 months.
+Supplier contract with fictional Atlas Hosting requires written consent on change of control. Consent is outstanding.
+A fictional customer has asserted a 0.3 service-credit claim; liability has not been agreed.
+No conclusion about legal compliance or regulatory approval can be drawn from this test brief.
+
+SYNERGIES — forecast, not realized
+Year-two annual cost savings: 0.6 shared hosting/procurement plus 0.3 back-office consolidation.
+Year-two incremental revenue: 1.5, with 40% contribution margin = 0.6 EBITDA benefit.
+Total planned annual EBITDA benefit: 1.5. One-time implementation costs: 0.8.
+Do not add 1.5 revenue directly to EBITDA. Do not classify the 0.8 one-time cost as recurring savings.
+No employee consultation plan, integration budget approval or customer migration pilot is supplied.
+
+MISSING EVIDENCE
+Audited accounts; quality-of-earnings report; signed customer renewals; add-back invoices; supplier change-of-control consent; penetration test; recovery-test results; founder succession plan; employee retention agreements; forecast pipeline evidence.
+
+TEST MARKER: MAPLE-FICTIONAL-2026-0916
