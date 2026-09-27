@@ -4,6 +4,16 @@ Ansyra is a workspace for mergers and acquisitions (M&A). It helps a team keep t
 
 This is a personal portfolio demonstration. Use fictional companies, documents, and deal data. AI provides research and draft analysis; people check the evidence and make the decisions. The application does not establish that an investment is sound or replace specialist advice.
 
+## Demo Access
+
+Live demo: https://ansyra-portfolio.onrender.com/
+
+Test account:
+Email - sarah.test3@ansyra-test.com
+Password -  TestPass!2026c
+
+The demo account contains fictional data and is provided solely for reviewing the project.
+
 ## What you can do
 
 | Feature | Purpose and important limits |
@@ -25,10 +35,6 @@ This is a personal portfolio demonstration. Use fictional companies, documents, 
 The copilot uses the page context and recent conversation. It does not automatically read the dashboard database, search the web, or change deal records. Successful structured analyses are saved to their relevant records; Genome answers are not saved analyses, and chat has its own history.
 
 Public feature pages and dashboard help explain the inputs, outputs, AI contribution, limits, and relevant deal stage. See the [feature mapping and audit](docs/landing-product-audit-2026-09-27.md).
-
-To check the features use the following demo login details:
-
-Email - sarah.test3@ansyra-test.com  Password -  TestPass!2026c
 
 **Engineering highlights**
 
