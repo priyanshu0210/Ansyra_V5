@@ -26,6 +26,16 @@ The copilot uses the page context and recent conversation. It does not automatic
 
 Public feature pages and dashboard help explain the inputs, outputs, AI contribution, limits, and relevant deal stage. See the [feature mapping and audit](docs/landing-product-audit-2026-09-27.md).
 
+**Engineering highlights**
+
+- **One AI gateway.** Every AI call goes through `api/lib/ai.ts::callAI` — provider-agnostic (Gemini/Groq/OpenRouter/Anthropic), strict-JSON output contracts validated with zod, automatic retry, and a mock provider so the full product runs with **zero AI spend** in development. Web-grounded research calls (Target Discovery) use Gemini native grounding with source citations.
+- **Defense-in-depth multi-tenancy.** Postgres RLS is locked down deny-by-default; the app layer independently scopes every query through `scopeFilter`/`assertDealAccess` (`createdBy = user OR organization`). Isolation is curl-tested across users as part of the definition of done.
+- **AI results are never ephemeral.** Every AI mutation persists its result server-side in the same request — analyses survive reloads, feed the Deal Genome corpus, and build the data moat.
+- **Sessions done properly.** httpOnly cookie sessions wrapping Supabase JWTs, concurrent-refresh deduplication (Supabase rotates refresh tokens on first use), sticky client auth that survives transient network failures.
+- **RBAC with feature gating.** `user_kind` roles + granular admin permissions + per-user feature flags, with a single source of truth in `contracts/constants.ts`; product features are gated per user, and the middleware tiers (`memberQuery`/`featureQuery`/`adminPermQuery`) make authorization declarative.
+- **Migration discipline.** Hand-written SQL migrations dual-applied (Supabase + versioned in `supabase/migrations/`) and mirrored in a typed Drizzle schema.
+- **Ships like a product.** Multi-stage Dockerfile, GitHub Actions CI, Sentry (client + server), and a smoke-test runbook.
+
 ## Recent improvements and why they were made
 
 | Change | Why |
